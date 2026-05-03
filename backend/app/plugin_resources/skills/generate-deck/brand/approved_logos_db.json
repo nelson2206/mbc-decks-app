@@ -1,0 +1,39 @@
+{
+  "_doc": "Logos de software/herramientas/proveedores que SÍ se pueden mostrar (referencia técnica al stack). El Auditor Visual los marca como NEUTRAL.",
+  "approved_software_vendors": [
+    {"name": "Microsoft", "aliases": ["MS", "Microsoft 365", "M365"], "products_visible_ok": ["Power BI", "Power Platform", "Power Apps", "Power Automate", "Copilot Studio", "Microsoft Project", "Teams", "Office", "Azure", "OneDrive", "SharePoint", "Dynamics 365", "Outlook"]},
+    {"name": "SAP", "products_visible_ok": ["S/4HANA", "ECC", "Ariba", "SuccessFactors", "Concur", "BTP", "Fiori", "PS", "MM", "WM", "FI", "CO"]},
+    {"name": "Oracle", "products_visible_ok": ["Oracle Cloud", "NetSuite", "JD Edwards", "PeopleSoft", "EBS"]},
+    {"name": "AWS", "aliases": ["Amazon Web Services"], "products_visible_ok": ["S3", "EC2", "Redshift", "Lambda", "SageMaker", "Bedrock"]},
+    {"name": "Google Cloud", "aliases": ["GCP"], "products_visible_ok": ["BigQuery", "Vertex AI", "Looker", "Workspace"]},
+    {"name": "Snowflake"},
+    {"name": "Databricks"},
+    {"name": "Salesforce"},
+    {"name": "ServiceNow"},
+    {"name": "Atlassian", "products_visible_ok": ["Jira", "Confluence", "Bitbucket"]},
+    {"name": "Smartsheet"},
+    {"name": "Planview"},
+    {"name": "Tableau"},
+    {"name": "Anthropic", "products_visible_ok": ["Claude", "Claude Code"]},
+    {"name": "OpenAI", "products_visible_ok": ["ChatGPT", "GPT-4", "GPT-4o"]},
+    {"name": "Google Gemini", "aliases": ["Gemini"]}
+  ],
+
+  "approved_methodologies_logos": [
+    {"name": "PMI", "aliases": ["Project Management Institute"]},
+    {"name": "Scrum.org"},
+    {"name": "PRINCE2"},
+    {"name": "Agile Alliance"},
+    {"name": "ISO"},
+    {"name": "NIST"},
+    {"name": "ITIL"},
+    {"name": "TOGAF"}
+  ],
+
+  "approved_minsait_branding": [
+    "Minsait logo positivo",
+    "Minsait logo negativo",
+    "Tech for impact tagline",
+    "Indra group logo (cuando aplica como matriz corporativa)"
+  ]
+}

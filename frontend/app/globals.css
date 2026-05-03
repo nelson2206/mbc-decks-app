@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'ForFutureSans';
+  src: url('/fonts/ForFutureSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ForFutureSans';
+  src: url('/fonts/ForFutureSans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ForFutureSans';
+  src: url('/fonts/ForFutureSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-forfuture: 'ForFutureSans', 'Inter', system-ui, sans-serif;
+}
+
+html, body {
+  font-family: var(--font-forfuture);
+  background-color: #FAFAF8;
+  color: #1F1B1A;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-pruno text-white px-4 py-2 rounded-chamfer hover:bg-pruno-dark transition;
+  }
+  .btn-secondary {
+    @apply bg-ceramica text-pruno px-4 py-2 rounded-chamfer hover:bg-stone-200 transition;
+  }
+  .btn-magenta {
+    @apply bg-magenta text-white px-4 py-2 rounded-chamfer hover:opacity-90 transition;
+  }
+  .card {
+    @apply bg-white rounded-chamfer shadow-sm border border-stone-200 p-6;
+  }
+  .input {
+    @apply w-full px-3 py-2 rounded-chamfer border border-stone-300 focus:outline-none focus:border-pruno focus:ring-1 focus:ring-pruno;
+  }
+  .label {
+    @apply block text-sm font-medium text-pruno mb-1;
+  }
+}

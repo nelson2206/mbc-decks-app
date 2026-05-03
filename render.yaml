@@ -1,0 +1,49 @@
+# Render.com Blueprint — deploy automático del backend FastAPI
+# Doc: https://render.com/docs/blueprint-spec
+#
+# Uso:
+#   1. Push este repo a GitHub
+#   2. En render.com → "New + → Blueprint" → conectar el repo
+#   3. Render detecta este archivo y crea el servicio automáticamente
+#   4. Configurar las env vars marcadas como "sync: false" en el dashboard
+
+services:
+  - type: web
+    name: mbc-decks-backend
+    runtime: docker
+    repo: # se llena automáticamente al conectar GitHub
+    rootDir: backend
+    plan: free  # 750h/mes · sleeps tras 15min sin tráfico
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false  # configurar manualmente en el dashboard de Render
+      - key: JWT_SECRET
+        generateValue: true  # Render genera random
+      - key: DATABASE_URL
+        sync: false  # pegar el connection string de Neon.tech
+      - key: CORS_ALLOWED_ORIGINS
+        value: '["https://mbc-decks.vercel.app"]'  # ajustar al URL real de Vercel
+      - key: STORAGE_BACKEND
+        value: s3
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false  # https://<account-id>.r2.cloudflarestorage.com
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: PLUGIN_PATH
+        value: /app/app/plugin_resources
+
+  # Job opcional para correr migraciones
+  - type: job
+    name: mbc-decks-migrate
+    runtime: docker
+    rootDir: backend
+    plan: free
+    schedule: "@daily"  # placeholder; ejecutar manualmente al deploy
+    envVars:
+      - fromGroup: mbc-decks-shared-env
+    dockerCommand: alembic upgrade head

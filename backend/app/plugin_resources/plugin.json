@@ -1,0 +1,17 @@
+{
+  "name": "mbc-decks",
+  "version": "0.3.0",
+  "description": "Generador de presentaciones para Minsait Business Consulting (MBC). Toma un brief, ejecuta una entrevista guiada y genera un .pptx con la marca y los arquetipos narrativos oficiales de MBC, aplicando co-branding cliente cuando corresponde.",
+  "author": "Minsait Business Consulting",
+  "homepage": "",
+  "license": "Proprietary - Minsait internal use",
+  "skills": [
+    "skills/generate-deck",
+    "skills/review-deck"
+  ],
+  "tags": ["consulting", "presentations", "pptx", "minsait", "branding"],
+  "requires": {
+    "python": ">=3.10",
+    "packages": ["python-pptx>=0.6.23", "Pillow>=10.0.0", "pypdf>=4.0.0"]
+  }
+}

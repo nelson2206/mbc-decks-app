@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: mbcdecks
+      POSTGRES_PASSWORD: mbcdecks
+      POSTGRES_DB: mbcdecks
+    ports: ["5432:5432"]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mbcdecks"]
+      interval: 10s
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://mbcdecks:mbcdecks@postgres:5432/mbcdecks
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      JWT_SECRET: ${JWT_SECRET:-CHANGE_ME}
+      CORS_ALLOWED_ORIGINS: '["http://localhost:3000"]'
+      STORAGE_LOCAL_PATH: /var/mbcdecks/storage
+      PLUGIN_PATH: /app/app/plugin_resources
+    volumes:
+      - ./backend/app/plugin_resources:/app/app/plugin_resources:ro
+      - mbcdecks_storage:/var/mbcdecks/storage
+    ports: ["8000:8000"]
+
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports: ["3000:3000"]
+
+volumes:
+  pg_data:
+  mbcdecks_storage:

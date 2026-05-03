@@ -1,0 +1,138 @@
+{
+  "_doc": "Catálogo de competidores conocidos por industria. El Auditor Visual A9 usa este JSON para detectar branding hostil. ALIMENTAR ACTIVAMENTE: cada nuevo cliente del CRM debe ir aquí con sus 3-5 competidores principales.",
+  "_version": "1.0",
+  "_last_updated": "2026-05-03",
+  "_maintained_by": "MBC Perú · práctica de Strategic Marketing",
+
+  "industries": {
+    "industria_consumo_energia": {
+      "subindustries": {
+        "maquinaria_pesada_dealer": {
+          "_doc": "Distribuidores de maquinaria pesada para minería/construcción/energía",
+          "clients_in_segment": ["Ferreyros", "Ferreycorp"],
+          "main_competitors": [
+            {"name": "Komatsu Mitsui Maquinarias Perú", "aka": ["KMMP", "Komatsu", "Komatsu Mitsui"], "country": "Perú", "brand_colors": ["#0033A1", "#FFCD00"]},
+            {"name": "Liebherr Perú", "aka": ["Liebherr"], "country": "Perú/Suiza", "brand_colors": ["#FFC700"]},
+            {"name": "Hitachi Construction Machinery", "aka": ["Hitachi CM", "Hitachi"], "country": "Japón"},
+            {"name": "Volvo Construction Equipment", "aka": ["Volvo CE", "Volvo Construction"], "country": "Suecia"},
+            {"name": "JCB Maquinarias Perú", "aka": ["JCB"], "country": "Perú/UK"},
+            {"name": "Sandvik Mining", "aka": ["Sandvik"], "country": "Suecia"},
+            {"name": "Doosan Bobcat Perú", "aka": ["Doosan", "Bobcat"], "country": "Perú/Corea"},
+            {"name": "Epiroc Perú", "aka": ["Epiroc"], "country": "Perú/Suecia"},
+            {"name": "Atlas Copco", "aka": ["Atlas Copco"], "country": "Suecia"}
+          ]
+        },
+        "mineria": {
+          "_doc": "Empresas mineras",
+          "main_competitors_perú": [
+            {"name": "Antamina", "aka": ["Compañía Minera Antamina"]},
+            {"name": "Cerro Verde", "aka": ["Sociedad Minera Cerro Verde"]},
+            {"name": "Las Bambas", "aka": ["MMG Las Bambas"]},
+            {"name": "Antapaccay", "aka": ["Compañía Minera Antapaccay"]},
+            {"name": "Quellaveco", "aka": ["Anglo American Quellaveco"]},
+            {"name": "Yanacocha", "aka": ["Newmont Yanacocha"]},
+            {"name": "Buenaventura"},
+            {"name": "Volcan Compañía Minera"},
+            {"name": "Minsur"},
+            {"name": "Marcobre"},
+            {"name": "Southern Copper"},
+            {"name": "Hudbay Constancia"},
+            {"name": "Shougang Hierro Perú"}
+          ]
+        },
+        "construccion": {
+          "main_competitors_perú": [
+            {"name": "Cosapi"},
+            {"name": "Graña y Montero", "aka": ["GyM", "Aenza"]},
+            {"name": "JJC Contratistas Generales"},
+            {"name": "Odebrecht"},
+            {"name": "OAS"},
+            {"name": "ICCGSA"},
+            {"name": "Engie Perú"},
+            {"name": "Cumbra"}
+          ]
+        },
+        "energia_utilities": {
+          "main_competitors_perú": [
+            {"name": "Enel Distribución Perú", "aka": ["Enel", "Edelnor"]},
+            {"name": "Luz del Sur"},
+            {"name": "Distriluz"},
+            {"name": "Hidrandina"},
+            {"name": "Engie Energía Perú"},
+            {"name": "Kallpa Generación"},
+            {"name": "EDEGEL"},
+            {"name": "EDELNOR"}
+          ]
+        }
+      }
+    },
+    "servicios_financieros": {
+      "subindustries": {
+        "banca": {
+          "main_competitors_perú": [
+            {"name": "BBVA Perú", "aka": ["BBVA"]},
+            {"name": "BCP", "aka": ["Banco de Crédito del Perú", "Credicorp"]},
+            {"name": "Scotiabank Perú", "aka": ["Scotiabank"]},
+            {"name": "Interbank"},
+            {"name": "BanBif"},
+            {"name": "Banco Pichincha"},
+            {"name": "Banco Falabella"},
+            {"name": "Banco Ripley"},
+            {"name": "Banco Santander Perú"},
+            {"name": "Mibanco"}
+          ]
+        },
+        "afp_seguros": {
+          "main_competitors_perú": [
+            {"name": "AFP Integra"},
+            {"name": "Profuturo AFP"},
+            {"name": "AFP Habitat"},
+            {"name": "Prima AFP"},
+            {"name": "Rímac Seguros"},
+            {"name": "Pacífico Seguros"},
+            {"name": "La Positiva Seguros"},
+            {"name": "Mapfre Perú"}
+          ]
+        },
+        "fintech": {
+          "main_competitors_perú": [
+            {"name": "Yape", "aka": ["Yape BCP"]},
+            {"name": "PLIN"},
+            {"name": "BIM"},
+            {"name": "Tunki"},
+            {"name": "Izipay"},
+            {"name": "Niubiz"},
+            {"name": "PagoEfectivo"}
+          ]
+        }
+      }
+    }
+  },
+
+  "consultancy_competitors": {
+    "_doc": "Competidores directos de Minsait Business Consulting. Si aparece su logo en un deck que vamos a entregar, es CRITICAL.",
+    "tier_1_strategy_mbb": [
+      {"name": "McKinsey & Company", "aka": ["McKinsey"], "brand_colors": ["#051C2C"]},
+      {"name": "Boston Consulting Group", "aka": ["BCG"], "brand_colors": ["#21BF61", "#003E33"]},
+      {"name": "Bain & Company", "aka": ["Bain"], "brand_colors": ["#CC0000"]}
+    ],
+    "tier_1_big_four": [
+      {"name": "Deloitte", "aka": ["Deloitte Consulting"], "brand_colors": ["#86BC25"]},
+      {"name": "EY", "aka": ["Ernst & Young"], "brand_colors": ["#FFE600", "#2E2E38"]},
+      {"name": "KPMG", "brand_colors": ["#0091DA"]},
+      {"name": "PwC", "aka": ["PricewaterhouseCoopers"], "brand_colors": ["#DC6900", "#FF8C00"]}
+    ],
+    "tier_2_tech_consulting": [
+      {"name": "Accenture", "brand_colors": ["#A100FF"]},
+      {"name": "Capgemini", "brand_colors": ["#0070AD"]},
+      {"name": "IBM Consulting", "aka": ["IBM"], "brand_colors": ["#054ADA"]},
+      {"name": "TCS", "aka": ["Tata Consultancy Services"]},
+      {"name": "Infosys"},
+      {"name": "Wipro"},
+      {"name": "Cognizant"},
+      {"name": "NTT Data", "aka": ["NTT"]},
+      {"name": "Everis"},
+      {"name": "Stefanini"}
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "client_inputs_required": {
+    "for_proposals": [
+      {"key": "client_name_commercial", "required": true, "type": "string"},
+      {"key": "client_legal_name", "required": false, "type": "string"},
+      {"key": "client_logo", "required": true, "type": "image", "preferred_format": ["svg", "png_transparent"]},
+      {"key": "client_brand_color_hex", "required": true, "type": "hex_color"},
+      {"key": "client_sector", "required": true, "type": "enum", "options": ["banca_finanzas", "mineria", "retail", "energia", "sector_publico", "telco", "industria_manufactura", "salud", "construccion", "agro", "educacion", "otro"]},
+      {"key": "client_image_cover", "required": false, "type": "image"},
+      {"key": "client_contact", "required": false, "type": "string"}
+    ],
+    "for_internal_training": []
+  },
+  "rules_by_deck_type": {
+    "proposal_commercial": {
+      "cover_layout_options": [5, 6, 7],
+      "cover_default": 6,
+      "cover_includes_client_logo": true,
+      "cover_includes_minsait_logo": true,
+      "context_section_includes_client_imagery": true,
+      "footer_present": true,
+      "footer_minsait_only": true,
+      "client_logo_in_header_during_context": true,
+      "closing_layout": 35,
+      "closing_includes_client_logo": false,
+      "rationale": "Co-branding equitativo en portada y contexto. Identidad Minsait dominante en cuerpo, propuesta y cierre."
+    },
+    "proposal_technical": {
+      "cover_layout_options": [5, 6, 7],
+      "cover_default": 6,
+      "cover_includes_client_logo": true,
+      "context_section_includes_client_imagery": true,
+      "footer_present": true,
+      "closing_layout": 35,
+      "rationale": "Misma lógica que comercial pero con énfasis técnico en contenido."
+    },
+    "proposal_capabilities": {
+      "cover_layout_options": [0, 1],
+      "cover_default": 1,
+      "cover_includes_client_logo": false,
+      "context_section_includes_client_imagery": false,
+      "client_logo_only_in_case_studies": true,
+      "footer_present": true,
+      "closing_layout": 33,
+      "rationale": "Documento de capacidades Minsait. Cliente solo aparece como audiencia mencionada."
+    },
+    "proposal_assessment": {
+      "cover_layout_options": [5, 6],
+      "cover_default": 6,
+      "cover_includes_client_logo": true,
+      "context_section_includes_client_imagery": true,
+      "footer_present": true,
+      "closing_layout": 35,
+      "rationale": "Assessment dirigido al cliente, con co-branding equitativo en portada."
+    },
+    "proposal_initiation": {
+      "cover_layout_options": [5, 6],
+      "cover_default": 6,
+      "cover_includes_client_logo": true,
+      "context_section_includes_client_imagery": true,
+      "footer_present": true,
+      "closing_layout": 33,
+      "rationale": "Iniciación de proyecto post-venta. Co-branding equitativo, cierre Minsait."
+    },
+    "training_internal": {
+      "cover_layout_options": [0, 1],
+      "cover_default": 1,
+      "cover_includes_client_logo": false,
+      "context_section_includes_client_imagery": false,
+      "client_logo_anywhere": false,
+      "footer_present": true,
+      "closing_layout": 33,
+      "rationale": "Capacitación interna Minsait. SIN co-branding cliente. 100% identidad MBC."
+    }
+  },
+  "client_color_usage": {
+    "in_minsait_palette": false,
+    "client_color_allowed_in": [
+      "logo del cliente (tal cual se entrega)",
+      "acento puntual en slide de contexto del cliente (línea o nodo de color cliente bordeando una imagen del cliente)"
+    ],
+    "client_color_forbidden_in": [
+      "fondos principales",
+      "gráficos y charts (usar paleta accent2-6 de Minsait)",
+      "tipografía",
+      "headers/footers"
+    ]
+  },
+  "client_image_treatment": {
+    "preferred_placement": "dentro de contenedor con chaflán uniforme",
+    "if_low_quality": "fondo Cerámica con la imagen contenida y un nodo/visor Pruno alrededor para 'marcarla' visualmente",
+    "min_resolution_recommended": "1920x1080"
+  },
+  "logo_placement_specs": {
+    "minsait_logo_cover_proposal": {
+      "position": "lado A de la portada (izq superior por convención)",
+      "size_relative": "3-4M de ancho"
+    },
+    "client_logo_cover_proposal": {
+      "position": "lado B de la portada (der inferior por convención)",
+      "size_relative": "3-4M de ancho",
+      "max_width_relative_to_minsait": "1.0"
+    },
+    "minsait_logo_footer": {
+      "position": "esquina inferior izquierda",
+      "size_relative": "1.5M de ancho"
+    }
+  }
+}

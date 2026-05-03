@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.pyc
+
+# Node
+node_modules/
+.next/
+.vercel/
+out/
+
+# Env (NUNCA subir)
+.env
+.env.local
+*.env.local
+
+# Storage / DB
+storage/
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log

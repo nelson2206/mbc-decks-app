@@ -1,0 +1,80 @@
+{
+  "family": "ForFuture Sans",
+  "weights_available": ["Light", "Regular", "Medium", "Bold", "Black"],
+  "italic_available": true,
+  "fallback_chain": ["Inter", "Helvetica Neue", "Arial", "sans-serif"],
+  "sizes_pt": {
+    "title": {
+      "size": 32,
+      "weight": "Regular",
+      "max_lines": 2,
+      "notes": "Breve y conciso. Usar Magenta o Blanco para palabras clave dentro del título."
+    },
+    "subtitle": {
+      "size": 14,
+      "weight": "Regular",
+      "notes": "Bajo el título principal."
+    },
+    "antetitle": {
+      "size": 11,
+      "weight": "Medium",
+      "notes": "Texto guía sobre el título (eyebrow)."
+    },
+    "body": {
+      "size": 11,
+      "weight": "Regular",
+      "max_chars_per_line": 90,
+      "notes": "Tamaño base para cuerpo de texto y bullets."
+    },
+    "small_body": {
+      "size": 9,
+      "weight": "Regular",
+      "notes": "Texto secundario, captions, leyendas."
+    },
+    "chart_text_min": {
+      "size": 8,
+      "weight": "Regular",
+      "notes": "Tamaño mínimo en gráficos y tablas. NO bajar de 8pt."
+    },
+    "footer": {
+      "size": 8,
+      "weight": "Regular",
+      "notes": "Footer: 'MINSAIT • Nombre del documento • dd/mm/aaaa'"
+    },
+    "page_number": {
+      "size": 8,
+      "weight": "Regular",
+      "notes": "Numeración de página."
+    }
+  },
+  "emphasis_rules": {
+    "preferred": "Cambio de color (a Magenta o Lila) en lugar de Bold/Italic",
+    "bold_use": "Solo para citas o énfasis muy específico, o destacados técnicos en cuerpo pequeño",
+    "italic_use": "Solo para citas",
+    "no_underline": "No usar subrayado salvo en hipervínculos"
+  },
+  "voice_and_tone": {
+    "person": "Primera persona plural (nosotros, proponemos, entendemos)",
+    "language": "Español neutro consultivo. Evitar localismos.",
+    "voice": "Activa, directa, propositiva",
+    "forbidden_adjectives": [
+      "innovador",
+      "robusto",
+      "best-in-class",
+      "líder en el mercado",
+      "world-class",
+      "de vanguardia",
+      "disruptivo (sin sustento)",
+      "único en su tipo"
+    ],
+    "preferred_phrases": [
+      "Proponemos…",
+      "Entendemos que…",
+      "Sugerimos…",
+      "Consideramos que…",
+      "Recomendamos…",
+      "En base a nuestra experiencia…",
+      "Hemos identificado que…"
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "_doc": "Hashes MD5[:12] de im\u00e1genes Minsait propias (placeholders, logos, contenedores). Auto-aprobadas por A9 sin OCR.",
+  "_version": "1.0",
+  "approved_hashes": {
+    "640d53445890": {
+      "name": "dashboard_1.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_1.png"
+    },
+    "1afdbf8f483f": {
+      "name": "dashboard_2.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_2.png"
+    },
+    "095e4186e4f0": {
+      "name": "dashboard_3.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_3.png"
+    },
+    "3f1bc19b0333": {
+      "name": "dashboard_4.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_4.png"
+    },
+    "1f02075c23be": {
+      "name": "dashboard_5.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_5.png"
+    },
+    "8bb5758530a9": {
+      "name": "dashboard_6.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 dashboard_6.png"
+    },
+    "0caa54ffb176": {
+      "name": "logo_ferreyros.png",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 logo_ferreyros.png"
+    },
+    "dc3c58152efe": {
+      "name": "portada_sectorial.jpeg",
+      "category": "minsait_placeholder",
+      "approved_by": "A9 whitelist \u00b7 placeholders v33",
+      "description": "Placeholder oficial generado por mbc-decks \u00b7 portada_sectorial.jpeg"
+    },
+    "1a325a77ba07": {
+      "name": "image11.jpeg",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Abstracci\u00f3n tecnol\u00f3gica con neones (estilo Minsait, sin branding)"
+    },
+    "4ba377e6a84b": {
+      "name": "image12.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Met\u00e1fora visual de lupa mirando al horizonte (gen\u00e9rica conceptual)"
+    },
+    "6ee7ed90fe3c": {
+      "name": "image48.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Cara con l\u00edneas ne\u00f3n magenta (estilo Minsait, sin branding)"
+    },
+    "55e3788dbe58": {
+      "name": "image64.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Portada caso Minsait con logo Minsait propio"
+    },
+    "dea425c4e5a3": {
+      "name": "image67.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Diagrama metodol\u00f3gico gen\u00e9rico (Levantamiento \u2192 Conceptualizaci\u00f3n \u2192 Caso de negocio \u2192 Aprobaci\u00f3n)"
+    },
+    "8073c5562733": {
+      "name": "image75.jpeg",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Vista a\u00e9rea de personas (foto stock gen\u00e9rica)"
+    },
+    "5a61d7f52219": {
+      "name": "image78.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft Teams (software stack aprobado)"
+    },
+    "d56f09b45daa": {
+      "name": "image80.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft Power Apps (software stack aprobado)"
+    },
+    "e07b4788bd31": {
+      "name": "image81.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft SharePoint (software stack aprobado)"
+    },
+    "993e3064be87": {
+      "name": "image85.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft Word (software stack aprobado)"
+    },
+    "5cac4dd05670": {
+      "name": "image86.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft Excel (software stack aprobado)"
+    },
+    "3b9553eac35b": {
+      "name": "image87.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft Office product (software stack aprobado)"
+    },
+    "e0f8fe828dcc": {
+      "name": "image88.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Logo Microsoft PowerPoint (software stack aprobado)"
+    },
+    "d17900f6c23d": {
+      "name": "image92.png",
+      "category": "post_visual_review_approved",
+      "approved_by": "A9 vision human review \u00b7 2026-05-03",
+      "description": "Mockup ilustrativo de app PMO interna (sin branding cliente identificable)"
+    }
+  }
+}

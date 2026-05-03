@@ -1,0 +1,82 @@
+{
+  "template_file": "assets/template/PPT_MINSAIT_Template_esp.potx",
+  "slide_size": {"width_in": 13.333, "height_in": 7.5, "ratio": "16:9"},
+  "module_M_in": 0.417,
+  "layouts": [
+    {"index": 0, "name": "PORTADA - V - Pruno", "family": "cover", "background": "pruno", "orientation": "vertical", "co_branding": false},
+    {"index": 1, "name": "PORTADA - H - Pruno", "family": "cover", "background": "pruno", "orientation": "horizontal", "co_branding": false},
+    {"index": 2, "name": "PORTADA - V - Blanco", "family": "cover", "background": "blanco", "orientation": "vertical", "co_branding": false},
+    {"index": 3, "name": "PORTADA - H - Blanco", "family": "cover", "background": "blanco", "orientation": "horizontal", "co_branding": false},
+    {"index": 4, "name": "PORTADA - FULL - Image_NEG", "family": "cover", "background": "image_dark", "orientation": "full", "co_branding": false},
+    {"index": 5, "name": "PORTADA - V - Pruno+Partner", "family": "cover", "background": "pruno", "orientation": "vertical", "co_branding": true, "client_logo_slot": true},
+    {"index": 6, "name": "PORTADA - H - Pruno+Partner", "family": "cover", "background": "pruno", "orientation": "horizontal", "co_branding": true, "client_logo_slot": true},
+    {"index": 7, "name": "PORTADA - FULL - Image+Partner", "family": "cover", "background": "image", "orientation": "full", "co_branding": true, "client_logo_slot": true, "client_image_slot": true},
+    {"index": 8, "name": "PORTADA - V - Cerámica", "family": "cover", "background": "ceramica", "orientation": "vertical", "co_branding": false},
+    {"index": 9, "name": "PORTADA - H - Cerámica", "family": "cover", "background": "ceramica", "orientation": "horizontal", "co_branding": false},
+    {"index": 10, "name": "PORTADA - FULL - Image POS", "family": "cover", "background": "image_light", "orientation": "full", "co_branding": false},
+    {"index": 11, "name": "ÍNDICE - Corto", "family": "index", "background": "ceramica", "max_sections": 4},
+    {"index": 12, "name": "ÍNDICE - Largo", "family": "index", "background": "ceramica", "max_sections": 8},
+    {"index": 13, "name": "SEPARATA - Principal", "family": "section_divider", "level": "primary", "background": "pruno", "image": false},
+    {"index": 14, "name": "SEPARATA - Principal+Imagen", "family": "section_divider", "level": "primary", "background": "pruno", "image": true},
+    {"index": 15, "name": "SEPARATA - Secundaria sin imagen", "family": "section_divider", "level": "secondary", "background": "ceramica", "image": false},
+    {"index": 16, "name": "SEPARATA - Secundaria+Imagen", "family": "section_divider", "level": "secondary", "background": "ceramica", "image": true},
+    {"index": 17, "name": "CONTENIDO - Texto - Ceramico", "family": "content_text", "background": "ceramica", "antetitle": true},
+    {"index": 18, "name": "CONTENIDO - Texto - Sin antetitulo_Ceramico", "family": "content_text", "background": "ceramica", "antetitle": false},
+    {"index": 19, "name": "CONTENIDO - Texto - Blanco", "family": "content_text", "background": "blanco", "antetitle": true},
+    {"index": 20, "name": "CONTENIDO - Texto - Sin antetitulo_Blanco", "family": "content_text", "background": "blanco", "antetitle": false},
+    {"index": 21, "name": "CONTENIDO - Texto - Pruno", "family": "content_text", "background": "pruno", "antetitle": true},
+    {"index": 22, "name": "CONTENIDO - Texto - Sin antetitulo_Pruno", "family": "content_text", "background": "pruno", "antetitle": false},
+    {"index": 23, "name": "CONTENIDO - Texto - Pruno Oscuro", "family": "content_text", "background": "pruno_oscuro", "antetitle": true},
+    {"index": 24, "name": "CONTENIDO - Texto - Sin antetitulo_Pruno Oscuro", "family": "content_text", "background": "pruno_oscuro", "antetitle": false},
+    {"index": 25, "name": "CONTENIDO - Imagen - Pruno", "family": "content_image", "background": "pruno"},
+    {"index": 26, "name": "CONTENIDO - Imagen - Cerámica", "family": "content_image", "background": "ceramica"},
+    {"index": 27, "name": "CONTENIDO - Texto+Full-Imagen", "family": "content_split", "background": "mixed"},
+    {"index": 28, "name": "CONTENIDO - Idea Principal - Pruno", "family": "key_idea", "background": "pruno"},
+    {"index": 29, "name": "CONTENIDO - Idea Principal - Cerámica", "family": "key_idea", "background": "ceramica"},
+    {"index": 30, "name": "VACIA", "family": "blank", "background": "pruno"},
+    {"index": 31, "name": "VACIA_Blanca", "family": "blank", "background": "blanco"},
+    {"index": 32, "name": "VACIA_Pruno", "family": "blank", "background": "pruno"},
+    {"index": 33, "name": "CIERRE - Pruno", "family": "closing", "background": "pruno", "data": false, "logo_only": false},
+    {"index": 34, "name": "CIERRE - Cerámica", "family": "closing", "background": "ceramica", "data": false, "logo_only": false},
+    {"index": 35, "name": "CIERRE - Datos - Pruno", "family": "closing", "background": "pruno", "data": true, "logo_only": false},
+    {"index": 36, "name": "CIERRE - Datos - Cerámica", "family": "closing", "background": "ceramica", "data": true, "logo_only": false},
+    {"index": 37, "name": "CIERRE - Pruno - LOGO", "family": "closing", "background": "pruno", "data": false, "logo_only": true},
+    {"index": 38, "name": "CIERRE - Cerámica - LOGO", "family": "closing", "background": "ceramica", "data": false, "logo_only": true}
+  ],
+  "selection_heuristics": {
+    "cover_proposal_with_client": {
+      "default": 6,
+      "alternatives": [5, 7],
+      "rationale": "Layouts 5/6/7 incluyen slot para logo del cliente (co-branding)."
+    },
+    "cover_capabilities_or_assessment": {
+      "default": 1,
+      "alternatives": [0, 9],
+      "rationale": "Layouts sin partner, Minsait dominante."
+    },
+    "cover_internal_training": {
+      "default": 1,
+      "alternatives": [0],
+      "rationale": "Sin co-branding cliente, identidad 100% Minsait."
+    },
+    "section_divider_first_chapter": 13,
+    "section_divider_subsection": 15,
+    "content_default_for_proposal": 17,
+    "content_dense_analytical": 18,
+    "content_high_impact_message": 28,
+    "content_image_focused": 26,
+    "closing_proposal": 35,
+    "closing_capabilities": 33,
+    "closing_internal_training": 33
+  },
+  "module_rules": {
+    "margin_M": "1/32 del lado más largo del slide (0.417 in para 16:9 a 13.333 in)",
+    "min_distance_between_elements": "1/3 de M",
+    "line_thickness_default_pt": 0.5
+  },
+  "container_rules": {
+    "ratios_available": ["16:9", "9:16", "1:1"],
+    "do_not_scale_manually": true,
+    "uniform_chamfer_radius": "Mantener proporción uniforme del chaflán en todo el documento"
+  }
+}

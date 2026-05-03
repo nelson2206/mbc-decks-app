@@ -1,0 +1,33 @@
+{
+  "archetype_id": "proposal_initiation",
+  "name": "Iniciación de Proyecto",
+  "description": "Kickoff de proyecto post-venta. Define alcance, plan inmersión, equipo y cronograma de arranque. Co-branding equitativo.",
+  "typical_length_slides": [25, 35, 45],
+  "co_branding": true,
+  "skeleton": [
+    {"order": 1, "section": "cover", "layout_index": 6, "title_template": "Iniciación · {{project_name}}", "subtitle_template": "{{client_name}} · {{month_year}}", "required": true, "client_logo_slot": true},
+    {"order": 2, "section": "objectives", "layout_index": 17, "title": "Objetivos de la sesión", "body": "qué buscamos alinear en este kickoff", "required": true},
+    {"order": 3, "section": "index", "layout_index": 12, "title": "Agenda", "sections_template": ["01 Contexto y alcance", "02 Plan de inmersión", "03 Equipo y gobierno", "04 Cronograma de arranque"], "required": true},
+    {"order": 4, "section": "section_divider_1", "layout_index": 13, "label": "01", "title": "Contexto y alcance", "required": true},
+    {"order": 5, "section": "context_recap", "layout_index": 18, "title_template": "Contexto: {{client_name}} y {{topic}}", "body": "recap del contexto que motivó el proyecto", "client_imagery_allowed": true, "required": true},
+    {"order": 6, "section": "scope", "layout_index": 17, "title": "Alcance del proyecto", "body": "qué entra y qué no entra", "required": true},
+    {"order": 7, "section": "outcomes_expected", "layout_index": 28, "title": "Resultados esperados", "key_idea": true, "required": true},
+    {"order": 8, "section": "section_divider_2", "layout_index": 13, "label": "02", "title": "Plan de inmersión", "required": true},
+    {"order": 9, "section": "discovery_approach", "layout_index": 17, "title": "Enfoque de inmersión y discovery", "body": "metodología de discovery", "required": true},
+    {"order": 10, "section": "stakeholders_to_interview", "layout_index": 17, "title": "Stakeholders a entrevistar", "body": "lista de personas clave del cliente", "required": true},
+    {"order": 11, "section": "documents_to_review", "layout_index": 17, "title": "Documentación a revisar", "body": "lista de documentos requeridos", "required": true},
+    {"order": 12, "section": "workshops_planned", "layout_index": 17, "title": "Workshops planificados", "body": "agenda de workshops", "required": false},
+    {"order": 13, "section": "section_divider_3", "layout_index": 13, "label": "03", "title": "Equipo y gobierno", "required": true},
+    {"order": 14, "section": "team_minsait", "layout_index": 17, "title": "Equipo Minsait", "body": "Partner, Manager, Consultores", "required": true},
+    {"order": 15, "section": "team_client", "layout_index": 17, "title": "Equipo del cliente", "body": "interlocutores y roles esperados", "required": true},
+    {"order": 16, "section": "governance_committees", "layout_index": 17, "title": "Comités de gobierno", "body": "comité de seguimiento, comité ejecutivo, cadencia", "required": true},
+    {"order": 17, "section": "communication_plan", "layout_index": 17, "title": "Plan de comunicación", "body": "canales, ritmo de reportes", "required": false},
+    {"order": 18, "section": "section_divider_4", "layout_index": 13, "label": "04", "title": "Cronograma de arranque", "required": true},
+    {"order": 19, "section": "kickoff_timeline", "layout_index": 18, "title": "Cronograma primeras 4 semanas", "required": true},
+    {"order": 20, "section": "key_milestones", "layout_index": 17, "title": "Hitos clave del proyecto", "required": true},
+    {"order": 21, "section": "next_steps", "layout_index": 17, "title": "Próximos pasos", "required": true},
+    {"order": 22, "section": "closing", "layout_index": 33, "required": true}
+  ],
+  "interview_blocks_required": [0, 1, 2, 3, 4],
+  "interview_blocks_optional": [6]
+}

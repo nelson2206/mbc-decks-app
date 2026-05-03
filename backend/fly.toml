@@ -1,0 +1,41 @@
+# Fly.io alternative deploy (más estable que Render free para backend Python)
+# Uso:
+#   1. Instalar flyctl: https://fly.io/docs/flyctl/install/
+#   2. flyctl auth login
+#   3. cd backend && flyctl launch --no-deploy
+#   4. flyctl secrets set ANTHROPIC_API_KEY=...
+#   5. flyctl secrets set DATABASE_URL=postgresql://...
+#   6. flyctl deploy
+
+app = "mbc-decks-backend"
+primary_region = "scl"  # Santiago de Chile (cerca de Perú)
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  CORS_ALLOWED_ORIGINS = '["https://mbc-decks.vercel.app"]'
+  STORAGE_BACKEND = "s3"
+  S3_REGION = "auto"
+  PLUGIN_PATH = "/app/app/plugin_resources"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true       # detener cuando no hay tráfico
+  auto_start_machines = true       # arrancar al recibir request
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.checks]
+    [[http_service.checks]]
+      grace_period = "10s"
+      interval = "30s"
+      method = "GET"
+      timeout = "5s"
+      path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+  cpus = 1

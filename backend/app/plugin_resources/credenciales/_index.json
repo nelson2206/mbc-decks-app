@@ -1,0 +1,260 @@
+{
+  "credentials": [
+    {
+      "id": "minsur_pmo_s51",
+      "client": "Minsur",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/minsur_pmo_s51.pptx"
+    },
+    {
+      "id": "unknown_pmo_s53",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/unknown_pmo_s53.pptx"
+    },
+    {
+      "id": "unknown_pmo_s55",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": 2021,
+      "path": "pmo/unknown_pmo_s55.pptx"
+    },
+    {
+      "id": "unknown_pmo_s56",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/unknown_pmo_s56.pptx"
+    },
+    {
+      "id": "unknown_pmo_s58",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": 2022,
+      "path": "pmo/unknown_pmo_s58.pptx"
+    },
+    {
+      "id": "codelco_pmo_s60",
+      "client": "CODELCO",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/codelco_pmo_s60.pptx"
+    },
+    {
+      "id": "codelco_pmo_s61",
+      "client": "CODELCO",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/codelco_pmo_s61.pptx"
+    },
+    {
+      "id": "petroper_pmo_s62",
+      "client": "Petroperú",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/petroper_pmo_s62.pptx"
+    },
+    {
+      "id": "unknown_pmo_s63",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/unknown_pmo_s63.pptx"
+    },
+    {
+      "id": "unknown_pmo_s64",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/unknown_pmo_s64.pptx"
+    },
+    {
+      "id": "endesa_pmo_s65",
+      "client": "Endesa",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/endesa_pmo_s65.pptx"
+    },
+    {
+      "id": "egp_pmo_s66",
+      "client": "EGP",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/egp_pmo_s66.pptx"
+    },
+    {
+      "id": "unknown_pmo_s67",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": 2012,
+      "path": "pmo/unknown_pmo_s67.pptx"
+    },
+    {
+      "id": "unknown_pmo_s68",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "pmo",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "pmo/unknown_pmo_s68.pptx"
+    },
+    {
+      "id": "unknown_data_analytics_s9",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "data_analytics",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "data_analytics/unknown_data_analytics_s9.pptx"
+    },
+    {
+      "id": "unknown_transformacion_digital_s2",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "transformacion_digital",
+      "industry": "industria_consumo_energia",
+      "year": 2025,
+      "path": "transformacion_digital/unknown_transformacion_digital_s2.pptx"
+    },
+    {
+      "id": "unknown_transformacion_digital_s10",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "transformacion_digital",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "transformacion_digital/unknown_transformacion_digital_s10.pptx"
+    },
+    {
+      "id": "unknown_transformacion_digital_s15",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "transformacion_digital",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "transformacion_digital/unknown_transformacion_digital_s15.pptx"
+    },
+    {
+      "id": "unknown_transformacion_digital_s26",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "transformacion_digital",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "transformacion_digital/unknown_transformacion_digital_s26.pptx"
+    },
+    {
+      "id": "unknown_transformacion_digital_s27",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "transformacion_digital",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "transformacion_digital/unknown_transformacion_digital_s27.pptx"
+    },
+    {
+      "id": "unknown_ia_genai_s18",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "ia_genai",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "ia_genai/unknown_ia_genai_s18.pptx"
+    },
+    {
+      "id": "unknown_ia_genai_s57",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "ia_genai",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "ia_genai/unknown_ia_genai_s57.pptx"
+    },
+    {
+      "id": "unknown_ia_genai_s66",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "ia_genai",
+      "industry": "industria_consumo_energia",
+      "year": null,
+      "path": "ia_genai/unknown_ia_genai_s66.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s20",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s20.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s22",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s22.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s23",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s23.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s24",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s24.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s25",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s25.pptx"
+    },
+    {
+      "id": "unknown_capabilities_s26",
+      "client": "[unknown — etiquetar manualmente]",
+      "topic": "capabilities",
+      "industry": "servicios_financieros",
+      "year": null,
+      "path": "capabilities/unknown_capabilities_s26.pptx"
+    },
+    {
+      "id": "bei_modelo_operativo_s2",
+      "client": "BEI",
+      "topic": "modelo_operativo",
+      "industry": "servicios_financieros",
+      "year": 2025,
+      "path": "modelo_operativo/bei_modelo_operativo_s2.pptx"
+    },
+    {
+      "id": "bei_modelo_operativo_s4",
+      "client": "BEI",
+      "topic": "modelo_operativo",
+      "industry": "servicios_financieros",
+      "year": 2025,
+      "path": "modelo_operativo/bei_modelo_operativo_s4.pptx"
+    },
+    {
+      "id": "bei_modelo_operativo_s5",
+      "client": "BEI",
+      "topic": "modelo_operativo",
+      "industry": "servicios_financieros",
+      "year": 2025,
+      "path": "modelo_operativo/bei_modelo_operativo_s5.pptx"
+    }
+  ]
+}

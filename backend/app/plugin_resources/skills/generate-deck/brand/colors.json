@@ -1,0 +1,84 @@
+{
+  "scheme_name": "MINSAIT COLORS",
+  "primary": {
+    "pruno": {
+      "hex": "#4F062A",
+      "rgb": [79, 6, 42],
+      "ooxml_token": "dk1",
+      "alias": ["morado", "Morado"],
+      "uses": ["fondos de portada", "separatas de primer nivel", "cierres", "color institucional dominante"]
+    },
+    "pruno_oscuro": {
+      "hex": "#260717",
+      "rgb": [38, 7, 23],
+      "ooxml_token": "dk2",
+      "alias": ["morado oscuro", "Morado Oscuro"],
+      "uses": ["variante sobria del Pruno", "fondos de gráficos para mayor contraste"]
+    },
+    "blanco": {
+      "hex": "#FFFFFF",
+      "rgb": [255, 255, 255],
+      "ooxml_token": "lt1",
+      "uses": ["texto sobre fondos oscuros", "fondos limpios"]
+    },
+    "ceramica": {
+      "hex": "#E3E2DA",
+      "rgb": [227, 226, 218],
+      "ooxml_token": "lt2",
+      "alias": ["gris cerámica", "Gris Cerámica"],
+      "uses": ["fondo neutro de slides interiores", "texto secundario sobre fondos oscuros"]
+    }
+  },
+  "accents": {
+    "magenta": {
+      "hex": "#FF0054",
+      "rgb": [255, 0, 84],
+      "ooxml_token": "accent1",
+      "alias": ["púrpura de acento", "Púrpura"],
+      "uses": ["resaltado de palabras clave", "acentos en títulos", "color de enlaces"]
+    },
+    "verde": {
+      "hex": "#44B757",
+      "rgb": [68, 183, 87],
+      "ooxml_token": "accent2",
+      "uses": ["estados positivos en gráficos", "métricas favorables"]
+    },
+    "lila": {
+      "hex": "#8661F5",
+      "rgb": [134, 97, 245],
+      "ooxml_token": "accent3",
+      "alias": ["púrpura suave"],
+      "uses": ["énfasis suave", "gradientes", "categorías secundarias en charts"]
+    },
+    "naranja": {
+      "hex": "#E56813",
+      "rgb": [229, 104, 19],
+      "ooxml_token": "accent4",
+      "uses": ["alertas suaves", "categorías secundarias en charts"]
+    },
+    "amazonico": {
+      "hex": "#00B0BD",
+      "rgb": [0, 176, 189],
+      "ooxml_token": "accent5",
+      "alias": ["azul amazónico", "Azul Amazónico"],
+      "uses": ["texto destacado sobre fondos claros", "acentos data/tecnología"]
+    },
+    "rosa": {
+      "hex": "#EF659D",
+      "rgb": [239, 101, 157],
+      "ooxml_token": "accent6",
+      "uses": ["acento decorativo", "categorías secundarias en charts"]
+    }
+  },
+  "links": {
+    "hyperlink": "#FF0054",
+    "followed_hyperlink": "#A40037"
+  },
+  "combinations": {
+    "rule_1": "Pruno en mayor proporción en portadas, separatas de primer nivel y cierres",
+    "rule_2": "Cerámica para slides interiores y contenido neutro",
+    "rule_3": "Texto: Cerámica o Blanco sobre fondos oscuros · Azul Amazónico sobre fondos claros",
+    "rule_4": "Resaltado: Magenta o Lila para títulos y palabras clave",
+    "rule_5": "Gráficos y tablas: paleta de acentos (verde/lila/naranja/amazónico/rosa), preferentemente sobre fondo Pruno o Pruno Oscuro"
+  }
+}

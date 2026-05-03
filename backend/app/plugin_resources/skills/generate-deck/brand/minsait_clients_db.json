@@ -1,0 +1,36 @@
+{
+  "_doc": "Catálogo de clientes Minsait conocidos. Si aparece su logo/branding en un deck para OTRO cliente, es WARNING (leak de información). Cada caso de éxito en `credenciales/` debe tener su cliente registrado aquí.",
+  "_version": "1.0",
+  "_last_updated": "2026-05-03",
+
+  "clients_perú": [
+    {"name": "BBVA Perú", "aka": ["BBVA"], "industry": "servicios_financieros", "subindustry": "banca", "engagement_topics": ["ia_genai"]},
+    {"name": "BCP", "aka": ["Banco de Crédito del Perú", "Credicorp"], "industry": "servicios_financieros", "subindustry": "banca", "engagement_topics": ["spo_marcos_financiacion"]},
+    {"name": "BEI", "aka": ["Banco BEI"], "industry": "servicios_financieros", "engagement_topics": ["modelo_atencion_consultas"]},
+    {"name": "Cosapi", "industry": "construccion", "engagement_topics": ["plan_transformacion_digital"]},
+    {"name": "Pacasmayo", "aka": ["Cementos Pacasmayo"], "industry": "industria_consumo_energia", "subindustry": "cemento", "engagement_topics": ["data_analytics"]},
+    {"name": "Alpayana", "industry": "industria_consumo_energia", "subindustry": "mineria", "engagement_topics": ["assessment_madurez_dato", "assessment_ia"]},
+    {"name": "Ferreyros", "industry": "industria_consumo_energia", "subindustry": "maquinaria_pesada_dealer", "engagement_topics": ["pmo"]},
+    {"name": "Minsur", "industry": "industria_consumo_energia", "subindustry": "mineria", "engagement_topics": ["pmo_sap_s4hana"]},
+    {"name": "Marcobre", "industry": "industria_consumo_energia", "subindustry": "mineria", "engagement_topics": ["pmo_sap_s4hana"]},
+    {"name": "Distriluz", "industry": "industria_consumo_energia", "subindustry": "energia_utilities", "engagement_topics": ["pmo_distribucion_electrica"]},
+    {"name": "Petroperú", "aka": ["PETROPERÚ"], "industry": "industria_consumo_energia", "subindustry": "petroleo_gas", "engagement_topics": ["gestion_aplicaciones_agile"]},
+    {"name": "PagoDirecto", "industry": "servicios_financieros", "subindustry": "fintech", "engagement_topics": ["estrategia_iniciacion"]},
+    {"name": "Izipay", "industry": "servicios_financieros", "subindustry": "fintech_pagos", "engagement_topics": ["capabilities_mmpp"]},
+    {"name": "USIL", "aka": ["Universidad San Ignacio de Loyola"], "industry": "educacion", "engagement_topics": ["sap_s4hana"]},
+    {"name": "USMP", "aka": ["Universidad San Martín de Porres"], "industry": "educacion", "engagement_topics": ["sap_s4hana"]},
+    {"name": "Metro de Lima Línea 2", "industry": "infraestructura_transporte", "engagement_topics": ["sap_implementacion"]},
+    {"name": "Enel Perú", "industry": "industria_consumo_energia", "subindustry": "energia_utilities", "engagement_topics": ["sap_implementacion"]},
+    {"name": "El Comercio", "aka": ["Grupo El Comercio"], "industry": "medios_comunicacion", "engagement_topics": ["sap_s4hana"]},
+    {"name": "Komatsu Mitsui", "aka": ["KMMP", "Komatsu"], "industry": "industria_consumo_energia", "subindustry": "maquinaria_pesada_dealer", "engagement_topics": ["pmo_sap_s4hana"], "_note_critical": "ATENCIÓN: cliente histórico Minsait pero competidor directo de Ferreyros. NUNCA mostrar su branding en deck Ferreyros."}
+  ],
+
+  "clients_internacional": [
+    {"name": "CODELCO", "aka": ["Corporación Nacional del Cobre"], "country": "Chile", "industry": "industria_consumo_energia", "subindustry": "mineria", "engagement_topics": ["digitalizacion_procesos", "pmo_ti"]},
+    {"name": "AES Andes", "country": "Chile", "industry": "industria_consumo_energia", "subindustry": "energia_utilities", "engagement_topics": ["oficina_procesos"]},
+    {"name": "Endesa", "aka": ["Grupo Endesa", "Enel Endesa"], "country": "España/Italia", "industry": "industria_consumo_energia", "subindustry": "energia_utilities", "engagement_topics": ["pmo_gdc"]},
+    {"name": "EGP", "aka": ["Enel Green Power"], "country": "Italia", "industry": "industria_consumo_energia", "subindustry": "energia_renovable", "engagement_topics": ["pmo_procesos_corporativos"]},
+    {"name": "CGE", "country": "Chile", "industry": "industria_consumo_energia", "subindustry": "energia_utilities", "engagement_topics": ["reporte_consolidado_proyecto"]},
+    {"name": "Ennet", "country": "Chile", "industry": "industria_consumo_energia", "engagement_topics": ["panel_compromisos"]}
+  ]
+}
