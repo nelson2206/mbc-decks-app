@@ -62,20 +62,12 @@ def _regenerate_pptx(deck: Deck, db: Session) -> str:
     out_dir.mkdir(parents=True, exist_ok=True)
     output = out_dir / f"{deck.id}.pptx"
 
-    # Construir edit_map con reemplazos básicos del cliente
-    brief = deck.deck_brief or {}
-    client_name = brief.get("client", {}).get("name_commercial", "") or deck.client_name
-    edit_map = {
-        "global_text_replacements": [],
-        "regex_replacements": [],
-        "slide_specific": {},
-        "image_replacements": [],
-        "delete_slides": [],
-    }
-    if client_name and client_name.lower() != "ferreyros":
-        edit_map["global_text_replacements"].append({"find": "Ferreyros", "replace": client_name})
-
-    deck_generator.generate_deck(str(reference), edit_map, str(output))
+    # Usar v3 (build from scratch) con slide_content real
+    deck_generator.generate_deck_from_content(
+        deck.slide_content or {},
+        deck.deck_brief or {},
+        str(output),
+    )
     deck.storage_path = str(output)
     db.commit()
     logger.info(f"Re-generado .pptx para deck {deck.id} en {output}")
