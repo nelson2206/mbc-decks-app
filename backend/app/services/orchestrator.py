@@ -6,6 +6,7 @@ import traceback
 from typing import Any
 
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from app.core.anthropic_client import claude
 from app.core.config import settings
@@ -70,6 +71,7 @@ def run_research(deck: Deck, db: Session) -> dict:
     )
     output = claude.call_agent("researcher", user_message, max_tokens=4096)
     deck.research_brief = {"markdown": output}
+    flag_modified(deck, "research_brief")
     db.commit()
     return deck.research_brief
 
@@ -92,6 +94,7 @@ def run_structure(deck: Deck, db: Session) -> dict:
     except (ValueError, json.JSONDecodeError):
         skeleton = {"raw": output}
     deck.narrative_skeleton = skeleton
+    flag_modified(deck, "narrative_skeleton")
     db.commit()
     return skeleton
 
@@ -119,6 +122,7 @@ def run_content(deck: Deck, db: Session) -> dict:
     except (ValueError, json.JSONDecodeError):
         content = {"raw": output}
     deck.slide_content = content
+    flag_modified(deck, "slide_content")
     db.commit()
     return content
 
