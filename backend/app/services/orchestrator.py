@@ -34,6 +34,38 @@ def _check_cancelled(deck: Deck, db: Session) -> bool:
     db.refresh(deck)
     return deck.status == "cancelled"
 
+
+
+def _extract_json(text: str) -> dict:
+    """Extrae JSON de la respuesta del LLM, manejando ```json blocks y texto extra."""
+    import re
+    if not text:
+        return {}
+    # Strip ```json ... ``` markdown blocks
+    m = re.search(r'```(?:json)?\s*([\s\S]*?)```', text)
+    if m:
+        text = m.group(1).strip()
+    # Find largest balanced { ... } block
+    text = text.strip()
+    if not text.startswith('{'):
+        # Buscar el primer { y último }
+        try:
+            start = text.index('{')
+            end = text.rindex('}')
+            text = text[start:end+1]
+        except ValueError:
+            return {"raw": text}
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        # Intentar repair simple: trailing comma
+        text2 = re.sub(r',(\s*[}\]])', r'\1', text)
+        try:
+            return json.loads(text2)
+        except json.JSONDecodeError:
+            return {"raw": text[:5000]}
+
+
 def _set_progress(deck: Deck, db: Session, step_key: str, label: str, pct: int):
     """Update progress in DB so frontend can show it."""
     deck.status = step_key
@@ -89,10 +121,7 @@ def run_structure(deck: Deck, db: Session) -> dict:
         f"Research:\n{research[:6000]}\n\nDevuelve JSON puro con cada slide adaptada."
     )
     output = claude.call_agent("structurer", user_message, max_tokens=4096)
-    try:
-        skeleton = json.loads(output[output.index("{"):output.rindex("}") + 1])
-    except (ValueError, json.JSONDecodeError):
-        skeleton = {"raw": output}
+    skeleton = _extract_json(output)
     deck.narrative_skeleton = skeleton
     flag_modified(deck, "narrative_skeleton")
     db.commit()
@@ -117,10 +146,7 @@ def run_content(deck: Deck, db: Session) -> dict:
     )
     output = claude.call_agent("content", user_message,
                                extra_system_context=extra_context, max_tokens=5120)
-    try:
-        content = json.loads(output[output.index("{"):output.rindex("}") + 1])
-    except (ValueError, json.JSONDecodeError):
-        content = {"raw": output}
+    content = _extract_json(output)
     deck.slide_content = content
     flag_modified(deck, "slide_content")
     db.commit()
