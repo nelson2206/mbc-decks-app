@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Sparkles, AlertTriangle, CheckCircle, Loader2, Download, RotateCw, XCircle } from 'lucide-react';
+import { Sparkles, AlertTriangle, CheckCircle, Loader2, Download, RotateCw, XCircle, StopCircle, Ban } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { AuthGuard } from '@/components/AuthGuard';
 import { decks, generateApi, auditApi } from '@/lib/api';
@@ -47,6 +47,16 @@ function ReviewInner() {
     return () => clearInterval(id);
   }, [deck?.status]);
 
+  const handleCancel = async () => {
+    if (!confirm('¿Cancelar la generación? Lo que esté en curso se detendrá tras el agente actual.')) return;
+    try {
+      await decks.cancel(deckId);
+      await refreshDeck();
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Error al cancelar');
+    }
+  };
+
   const handleGenerate = async () => {
     setRetrying(true);
     try {
@@ -64,6 +74,7 @@ function ReviewInner() {
   const inProgress = ['generating','researching','structuring','writing','visual','audit','reviewing'].includes(deck.status);
   const isError = deck.status === 'error';
   const isReady = deck.status === 'ready';
+  const isCancelled = deck.status === 'cancelled';
   const isBlocked = deck.audit_status === 'BLOCKED';
   const isInitial = ['interviewing_done','draft'].includes(deck.status);
   const currentStepIdx = getStepIndex(deck.status);
@@ -99,7 +110,17 @@ function ReviewInner() {
               <h2 className="font-semibold text-pruno flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-magenta" /> Progreso del pipeline
               </h2>
-              <span className="text-2xl font-bold text-pruno">{pct}%</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-bold text-pruno">{pct}%</span>
+                {inProgress && (
+                  <button
+                    onClick={handleCancel}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-chamfer border border-magenta text-magenta hover:bg-magenta/10 text-sm"
+                  >
+                    <StopCircle className="w-4 h-4" /> Cancelar
+                  </button>
+                )}
+              </div>
             </div>
             <div className="h-3 bg-stone-200 rounded-full overflow-hidden mb-4">
               <div
@@ -137,6 +158,19 @@ function ReviewInner() {
                 );
               })}
             </div>
+
+            {/* Cancelled */}
+            {isCancelled && (
+              <div className="mt-4 bg-stone-100 p-4 rounded-chamfer">
+                <div className="flex items-center gap-2 text-stone-700 font-semibold mb-2">
+                  <Ban className="w-4 h-4" /> Generación cancelada por el usuario
+                </div>
+                <p className="text-sm text-stone-600 mb-3">Puedes volver a iniciar el pipeline cuando quieras.</p>
+                <button onClick={handleGenerate} disabled={retrying} className="btn-primary inline-flex items-center gap-2">
+                  <RotateCw className="w-4 h-4" /> {retrying ? 'Reiniciando…' : 'Reiniciar generación'}
+                </button>
+              </div>
+            )}
 
             {/* Error display */}
             {isError && deck.last_error && (

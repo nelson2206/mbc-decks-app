@@ -43,6 +43,7 @@ export const decks = {
   get: (id: string) => api.get(`/api/decks/${id}`).then((r) => r.data),
   download: (id: string) => `${API_URL}/api/decks/${id}/download`,
   remove: (id: string) => api.delete(`/api/decks/${id}`),
+  cancel: (id: string) => api.post(`/api/decks/${id}/cancel`).then((r) => r.data),
 };
 
 export const interview = {

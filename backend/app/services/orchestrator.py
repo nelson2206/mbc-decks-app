@@ -27,6 +27,12 @@ PIPELINE_STEPS = [
 ]
 
 
+
+def _check_cancelled(deck: Deck, db: Session) -> bool:
+    """Refresca el deck desde la BD y retorna True si fue cancelado por el usuario."""
+    db.refresh(deck)
+    return deck.status == "cancelled"
+
 def _set_progress(deck: Deck, db: Session, step_key: str, label: str, pct: int):
     """Update progress in DB so frontend can show it."""
     deck.status = step_key
@@ -141,18 +147,24 @@ def run_full_pipeline(deck_id: str, db: Session) -> Deck:
     deck.last_error = ""
     db.commit()
 
+    if _check_cancelled(deck, db):
+        return deck
     try:
         run_research(deck, db)
     except Exception as e:
         _set_error(deck, db, "A2 Investigador", e)
         return deck
 
+    if _check_cancelled(deck, db):
+        return deck
     try:
         run_structure(deck, db)
     except Exception as e:
         _set_error(deck, db, "A3 Estructurador", e)
         return deck
 
+    if _check_cancelled(deck, db):
+        return deck
     try:
         run_content(deck, db)
     except Exception as e:

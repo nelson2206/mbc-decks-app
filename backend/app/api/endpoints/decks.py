@@ -64,3 +64,19 @@ def delete_deck(deck_id: str, current: User = Depends(get_current_user), db: Ses
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Deck no encontrado")
     db.delete(deck)
     db.commit()
+
+@router.post("/{deck_id}/cancel", status_code=status.HTTP_200_OK)
+def cancel_deck(deck_id: str, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Cancela un deck en proceso. El orchestrator chequea entre pasos y aborta."""
+    deck = db.query(Deck).filter(Deck.id == deck_id, Deck.owner_id == current.id).first()
+    if not deck:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Deck no encontrado")
+    in_progress_states = {"generating","researching","structuring","writing","visual","audit","reviewing"}
+    if deck.status not in in_progress_states:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, f"El deck no está en progreso (estado actual: {deck.status})")
+    deck.status = "cancelled"
+    deck.progress_step = "Cancelado por usuario"
+    deck.last_error = "Cancelado manualmente desde la UI"
+    db.commit()
+    return {"deck_id": deck.id, "status": "cancelled"}
+
