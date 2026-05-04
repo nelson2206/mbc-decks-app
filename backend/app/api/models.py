@@ -105,6 +105,11 @@ class DeckOut(BaseModel):
     progress_step: str = ""
     progress_percentage: int = 0
     last_error: str = ""
+    research_brief: dict = {}
+    narrative_skeleton: dict = {}
+    slide_content: dict = {}
+    audit_report: dict = {}
+    review_consolidated: str = ""
     created_at: datetime
     updated_at: datetime
     class Config:
