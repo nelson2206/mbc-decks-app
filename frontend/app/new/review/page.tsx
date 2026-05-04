@@ -272,7 +272,7 @@ function ReviewInner() {
               </div>
             )}
 
-            {/* Ready: descarga */}
+            {/* Ready: descarga + regenerar */}
             {isReady && (
               <div className="mt-5 flex items-center justify-between bg-gradient-to-r from-verde/10 to-amazonico/10 p-4 rounded-chamfer border border-verde/30">
                 <div className="flex items-center gap-2 text-verde">
@@ -282,16 +282,29 @@ function ReviewInner() {
                     <div className="text-xs text-stone-600">Auditoría visual: <strong>{deck.audit_status}</strong></div>
                   </div>
                 </div>
-                <button
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    try { await decks.download(deck.id, `${deck.client_name}_${deck.title}.pptx`); }
-                    catch (err: any) { alert(err.message || 'Error al descargar'); }
-                  }}
-                  className="btn-primary inline-flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" /> Descargar .pptx
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={async () => {
+                      if (!confirm('¿Regenerar el deck con el mismo prompt? Toma 3-5 min y reemplaza el .pptx actual.')) return;
+                      await handleGenerate();
+                    }}
+                    disabled={retrying}
+                    className="btn-secondary inline-flex items-center gap-2"
+                    title="Re-corre todo el pipeline usando el mismo brief y entrevista"
+                  >
+                    <RotateCw className="w-4 h-4" /> Regenerar
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      try { await decks.download(deck.id, `${deck.client_name}_${deck.title}.pptx`); }
+                      catch (err: any) { alert(err.message || 'Error al descargar'); }
+                    }}
+                    className="btn-primary inline-flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" /> Descargar .pptx
+                  </button>
+                </div>
               </div>
             )}
 

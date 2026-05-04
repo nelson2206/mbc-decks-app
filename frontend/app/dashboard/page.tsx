@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Download, AlertCircle, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { Plus, Download, AlertCircle, CheckCircle, Clock, Loader2, RotateCw } from 'lucide-react';
 import { AuthGuard } from '@/components/AuthGuard';
-import { decks } from '@/lib/api';
+import { decks, generateApi } from '@/lib/api';
 
 type DeckItem = {
   id: string;
@@ -83,6 +83,26 @@ export default function DashboardPage() {
                   <Link href={`/new/review?deckId=${d.id}`} className="btn-secondary text-sm">
                     Ver / Editar
                   </Link>
+                  {(d.status === 'ready' || d.status === 'error' || d.status === 'blocked') && (
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        if (!confirm(`¿Regenerar "${d.title}" con el mismo prompt? Toma 3-5 min y reemplaza el .pptx actual.`)) return;
+                        try {
+                          await generateApi.start(d.id, { fast_mode: false });
+                          // Optimista: refrescar lista
+                          decks.list().then(setItems);
+                          alert('Regeneración iniciada. Mira el progreso en "Ver / Editar".');
+                        } catch (err: any) {
+                          alert(err.response?.data?.detail || 'Error al regenerar');
+                        }
+                      }}
+                      className="btn-secondary text-sm inline-flex items-center gap-1"
+                      title="Re-corre el pipeline con el mismo brief"
+                    >
+                      <RotateCw className="w-3 h-3" /> Regenerar
+                    </button>
+                  )}
                   {d.status === 'ready' && (
                     <button
                       onClick={async (e) => {
