@@ -7,14 +7,16 @@ from app.api.models import InterviewSubmit
 from app.db.session import get_db
 from app.db.models import User, Deck
 from app.services.knowledge import knowledge
+from app.services.topic_labels import label_for
 
 router = APIRouter(prefix="/api/interview", tags=["interview"])
 
 
 @router.get("/topics")
 def list_topics(current: User = Depends(get_current_user)):
-    """Lista los temas con knowledge base disponible."""
-    return {"topics": knowledge.list_topics()}
+    """Lista los temas con knowledge base disponible (con labels legibles)."""
+    ids = knowledge.list_topics()
+    return {"topics": [{"id": t, "label": label_for(t)} for t in ids]}
 
 
 @router.get("/{deck_id}/questions")

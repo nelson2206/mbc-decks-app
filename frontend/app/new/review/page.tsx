@@ -1,20 +1,34 @@
 'use client';
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Sparkles, AlertTriangle, CheckCircle, Loader2, Download } from 'lucide-react';
+import { Sparkles, AlertTriangle, CheckCircle, Loader2, Download, RotateCw, XCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { AuthGuard } from '@/components/AuthGuard';
 import { decks, generateApi, auditApi } from '@/lib/api';
 
+const PIPELINE_STEPS = [
+  { key: 'researching',  label: '🔬 A2 Investigador',     pct: 10 },
+  { key: 'structuring',  label: '🏗️ A3 Estructurador',    pct: 25 },
+  { key: 'writing',      label: '✍️ A4 Contenido',        pct: 50 },
+  { key: 'visual',       label: '🎨 A5 Visual + .pptx',   pct: 65 },
+  { key: 'audit',        label: '🛡️ A9 Auditoría visual', pct: 75 },
+  { key: 'reviewing',    label: '👥 A6/A7/A8 Revisores',  pct: 90 },
+  { key: 'ready',        label: '✅ Listo',               pct: 100 },
+];
+
+function getStepIndex(status: string): number {
+  const idx = PIPELINE_STEPS.findIndex((s) => s.key === status);
+  return idx >= 0 ? idx : -1;
+}
+
 function ReviewInner() {
   const params = useSearchParams();
-  const router = useRouter();
   const deckId = params.get('deckId') || '';
   const [deck, setDeck] = useState<any>(null);
-  const [polling, setPolling] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   const refreshDeck = async () => {
-    if (!deckId) return;
+    if (!deckId) return null;
     const d = await decks.get(deckId);
     setDeck(d);
     return d;
@@ -24,77 +38,150 @@ function ReviewInner() {
     refreshDeck();
   }, [deckId]);
 
-  // Poll deck status while pipeline runs
+  // Polling activo
   useEffect(() => {
     if (!deck) return;
-    const inProgress = ['generating', 'researching', 'structuring', 'writing', 'visual', 'audit'].includes(deck.status);
-    if (!inProgress) {
-      setPolling(false);
-      return;
-    }
-    setPolling(true);
-    const id = setInterval(refreshDeck, 5000);
+    const inProgress = ['generating','researching','structuring','writing','visual','audit','reviewing'].includes(deck.status);
+    if (!inProgress) return;
+    const id = setInterval(refreshDeck, 4000);
     return () => clearInterval(id);
   }, [deck?.status]);
 
   const handleGenerate = async () => {
-    await generateApi.start(deckId);
-    refreshDeck();
+    setRetrying(true);
+    try {
+      await generateApi.start(deckId);
+      await refreshDeck();
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Error al iniciar generación');
+    } finally {
+      setRetrying(false);
+    }
   };
 
-  const handleReAudit = async () => {
-    await auditApi.run(deckId);
-    refreshDeck();
-  };
+  if (!deck) return <AuthGuard><div className="text-stone-500">Cargando…</div></AuthGuard>;
 
-  if (!deck) return <div className="text-stone-500">Cargando…</div>;
-
-  const blocked = deck.audit_status === 'BLOCKED';
-  const ready = deck.status === 'ready';
+  const inProgress = ['generating','researching','structuring','writing','visual','audit','reviewing'].includes(deck.status);
+  const isError = deck.status === 'error';
+  const isReady = deck.status === 'ready';
+  const isBlocked = deck.audit_status === 'BLOCKED';
+  const isInitial = ['interviewing_done','draft'].includes(deck.status);
+  const currentStepIdx = getStepIndex(deck.status);
+  const pct = deck.progress_percentage || 0;
 
   return (
     <AuthGuard>
       <div className="max-w-4xl">
         <h1 className="text-3xl font-bold text-pruno mb-2">{deck.title}</h1>
-        <p className="text-stone-600 mb-8">Cliente: {deck.client_name} · Tema: {deck.topic} · Estado: <strong>{deck.status}</strong></p>
+        <p className="text-stone-600 mb-8">
+          Cliente: <strong>{deck.client_name}</strong> · Tema: <strong>{deck.topic}</strong> · Estado:{' '}
+          <strong className={isError ? 'text-magenta' : isReady ? 'text-verde' : 'text-amazonico'}>
+            {deck.progress_step || deck.status}
+          </strong>
+        </p>
 
-        {/* Action card */}
-        <div className="card mb-6">
-          <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-magenta" /> Pipeline multi-agente
-          </h2>
-          {deck.status === 'interviewing_done' && (
-            <button onClick={handleGenerate} className="btn-magenta inline-flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> Iniciar generación con IA
+        {/* Botón de inicio si no ha arrancado */}
+        {isInitial && (
+          <div className="card mb-6">
+            <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-magenta" /> Pipeline multi-agente
+            </h2>
+            <button onClick={handleGenerate} disabled={retrying} className="btn-magenta inline-flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : 'Iniciar generación con IA'}
             </button>
-          )}
-          {polling && (
-            <div className="flex items-center gap-2 text-amazonico">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>El pipeline está corriendo… (puede tomar 2-5 minutos)</span>
+          </div>
+        )}
+
+        {/* Barra de progreso */}
+        {(inProgress || isReady || isError) && (
+          <div className="card mb-6">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="font-semibold text-pruno flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-magenta" /> Progreso del pipeline
+              </h2>
+              <span className="text-2xl font-bold text-pruno">{pct}%</span>
             </div>
-          )}
-          {ready && (
-            <div className="flex items-center justify-between bg-verde/10 p-4 rounded-chamfer">
-              <div className="flex items-center gap-2 text-verde">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold">Deck listo</span>
+            <div className="h-3 bg-stone-200 rounded-full overflow-hidden mb-4">
+              <div
+                className={`h-3 rounded-full transition-all duration-500 ${
+                  isError ? 'bg-magenta' : isReady ? 'bg-verde' : 'bg-magenta animate-pulse'
+                }`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              {PIPELINE_STEPS.map((step, i) => {
+                let icon, color;
+                if (isError && i === currentStepIdx) {
+                  icon = <XCircle className="w-4 h-4 text-magenta" />;
+                  color = 'text-magenta font-semibold';
+                } else if (i < currentStepIdx || isReady) {
+                  icon = <CheckCircle className="w-4 h-4 text-verde" />;
+                  color = 'text-verde';
+                } else if (i === currentStepIdx && inProgress) {
+                  icon = <Loader2 className="w-4 h-4 text-amazonico animate-spin" />;
+                  color = 'text-amazonico font-semibold';
+                } else {
+                  icon = <div className="w-4 h-4 rounded-full border-2 border-stone-300" />;
+                  color = 'text-stone-400';
+                }
+                return (
+                  <div key={step.key} className={`flex items-center gap-3 ${color}`}>
+                    {icon}
+                    <span className="text-sm">{step.label}</span>
+                    {i === currentStepIdx && inProgress && (
+                      <span className="text-xs text-stone-500 ml-auto">en curso…</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Error display */}
+            {isError && deck.last_error && (
+              <div className="mt-4 bg-magenta/10 p-4 rounded-chamfer">
+                <div className="flex items-center gap-2 text-magenta font-semibold mb-2">
+                  <AlertTriangle className="w-4 h-4" /> El pipeline se detuvo
+                </div>
+                <code className="block text-xs text-stone-700 font-mono mb-3 break-words">{deck.last_error}</code>
+                <button onClick={handleGenerate} disabled={retrying} className="btn-primary inline-flex items-center gap-2">
+                  <RotateCw className="w-4 h-4" /> {retrying ? 'Reintentando…' : 'Reintentar'}
+                </button>
               </div>
-              <a href={decks.download(deck.id)} target="_blank" className="btn-primary inline-flex items-center gap-2">
-                <Download className="w-4 h-4" /> Descargar .pptx
-              </a>
-            </div>
-          )}
-        </div>
+            )}
+
+            {/* Ready: descarga */}
+            {isReady && (
+              <div className="mt-4 flex items-center justify-between bg-verde/10 p-4 rounded-chamfer">
+                <div className="flex items-center gap-2 text-verde">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-semibold">Deck listo · auditoría {deck.audit_status}</span>
+                </div>
+                <a href={decks.download(deck.id)} target="_blank" className="btn-primary inline-flex items-center gap-2">
+                  <Download className="w-4 h-4" /> Descargar .pptx
+                </a>
+              </div>
+            )}
+
+            {/* Blocked */}
+            {isBlocked && deck.status !== 'error' && (
+              <div className="mt-4 bg-magenta/10 p-4 rounded-chamfer">
+                <div className="flex items-center gap-2 text-magenta font-semibold mb-2">
+                  <AlertTriangle className="w-4 h-4" /> Bloqueado por A9 (branding hostil detectado)
+                </div>
+                <p className="text-sm text-stone-700">Revisa el reporte abajo y reemplaza las imágenes flageadas antes de descargar.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Audit report */}
         {deck.audit_report && Object.keys(deck.audit_report).length > 0 && (
           <div className="card mb-6">
             <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2">
-              {blocked
-                ? <AlertTriangle className="w-5 h-5 text-magenta" />
-                : <CheckCircle className="w-5 h-5 text-verde" />}
-              Auditoría visual A9 — {deck.audit_status}
+              {isBlocked ? <AlertTriangle className="w-5 h-5 text-magenta" /> : <CheckCircle className="w-5 h-5 text-verde" />}
+              Auditoría visual A9 · <span className="font-mono text-sm">{deck.audit_status}</span>
             </h2>
             {deck.audit_report.summary && (
               <div className="grid grid-cols-4 gap-4 mb-4">
@@ -104,23 +191,10 @@ function ReviewInner() {
                 <Stat label="Aprobados" value={deck.audit_report.summary.approved} color="text-verde" />
               </div>
             )}
-            {blocked && (
-              <div className="bg-magenta/10 p-4 rounded-chamfer">
-                <p className="font-semibold text-magenta mb-2">El deck NO se puede entregar</p>
-                <p className="text-sm text-stone-700">Hay branding hostil detectado. Revisa los hallazgos y aplica los reemplazos antes de re-auditar.</p>
-                <button onClick={handleReAudit} className="btn-primary mt-3">Re-auditar</button>
-              </div>
-            )}
-            {deck.audit_report.findings?.filter((f: any) => f.severity === 'CRITICAL').slice(0, 5).map((f: any) => (
-              <div key={f.image_id} className="border-l-4 border-magenta pl-3 my-3">
-                <div className="text-sm font-semibold text-pruno">{f.image_id} (slides {f.appears_in_slides.join(', ')})</div>
-                <div className="text-xs text-stone-600">{f.description}</div>
-              </div>
-            ))}
           </div>
         )}
 
-        {/* Reviews del Manager y Socios */}
+        {/* Reviews */}
         {deck.review_consolidated && (
           <div className="card">
             <h2 className="font-semibold text-pruno mb-4">Revisión Manager + Socios</h2>

@@ -40,7 +40,10 @@ class Deck(Base):
     audit_status: Mapped[str] = mapped_column(String(50), default="pending")
     audit_report: Mapped[dict] = mapped_column(JSON, default=dict)
     review_consolidated: Mapped[str] = mapped_column(Text, default="")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    progress_step: Mapped[str] = mapped_column(String(50), default="")
+    progress_percentage: Mapped[int] = mapped_column(Integer, default=0)
+    last_error: Mapped[str] = mapped_column(Text, default="")
+        created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     owner: Mapped["User"] = relationship("User", back_populates="decks")
 

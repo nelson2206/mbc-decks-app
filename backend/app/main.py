@@ -6,6 +6,7 @@ from sqlalchemy import inspect
 from app.core.config import settings
 from app.db.session import engine
 from app.db.models import Base
+from app.db.migrations import run_migrations
 from app.api.endpoints import auth, decks, interview, generate, audit, credentials
 
 
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
         inspector = inspect(engine)
         if not inspector.has_table("users"):
             Base.metadata.create_all(bind=engine)
+        run_migrations(engine)
 
     @app.get("/health", tags=["health"])
     def health():

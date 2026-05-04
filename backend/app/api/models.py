@@ -101,6 +101,9 @@ class DeckOut(BaseModel):
     status: str
     audit_status: str
     storage_path: str
+    progress_step: str = ""
+    progress_percentage: int = 0
+    last_error: str = ""
     created_at: datetime
     updated_at: datetime
     class Config:

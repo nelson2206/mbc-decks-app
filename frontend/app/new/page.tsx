@@ -23,9 +23,11 @@ const INDUSTRIES = [
   { id: 'all', label: 'Cualquiera (interno)' },
 ];
 
+type Topic = { id: string; label: string };
+
 export default function NewDeckPage() {
   const router = useRouter();
-  const [topics, setTopics] = useState<string[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
   const [form, setForm] = useState({
     deck_type: '',
     topic: '',
@@ -36,7 +38,13 @@ export default function NewDeckPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    interview.topics().then((d) => setTopics(d.topics || []));
+    interview.topics().then((d) => {
+      const raw = d.topics || [];
+      const list: Topic[] = raw.map((t: any) =>
+        typeof t === 'string' ? { id: t, label: t } : t
+      );
+      setTopics(list);
+    });
   }, []);
 
   const canSubmit = form.deck_type && form.topic && form.industry && form.title_working && form.client_name;
@@ -80,10 +88,18 @@ export default function NewDeckPage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Tema (knowledge base)</label>
-              <select className="input" value={form.topic} onChange={(e) => setForm({ ...form, topic: e.target.value })}>
+              <label className="label">Tema</label>
+              <select
+                className="input"
+                value={form.topic}
+                onChange={(e) => setForm({ ...form, topic: e.target.value })}
+              >
                 <option value="">Selecciona…</option>
-                {topics.map((t) => <option key={t} value={t}>{t}</option>)}
+                {topics.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.label}
+                  </option>
+                ))}
               </select>
               <p className="text-xs text-stone-500 mt-1">El A4 Contenido cargará el knowledge de este tema</p>
             </div>
