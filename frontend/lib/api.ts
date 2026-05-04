@@ -63,6 +63,7 @@ export const decks = {
   downloadUrl: (id: string) => `${API_URL}/api/decks/${id}/download`,
   remove: (id: string) => api.delete(`/api/decks/${id}`),
   cancel: (id: string) => api.post(`/api/decks/${id}/cancel`).then((r) => r.data),
+  regeneratePptx: (id: string) => api.post(`/api/decks/${id}/regenerate-pptx`).then((r) => r.data),
 };
 
 export const interview = {

@@ -125,3 +125,24 @@ def cancel_deck(deck_id: str, current: User = Depends(get_current_user), db: Ses
     deck.last_error = "Cancelado manualmente desde la UI"
     db.commit()
     return {"deck_id": deck.id, "status": "cancelled"}
+
+@router.post("/{deck_id}/regenerate-pptx", status_code=status.HTTP_200_OK)
+def force_regenerate_pptx(deck_id: str, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Forzar regeneración del .pptx desde slide_content actual (borra cache si existe)."""
+    deck = db.query(Deck).filter(Deck.id == deck_id, Deck.owner_id == current.id).first()
+    if not deck:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Deck no encontrado")
+    if not deck.slide_content or len(str(deck.slide_content)) < 50:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Deck no tiene contenido. Ejecuta primero la generación.")
+    # Borrar archivo previo si existe
+    if deck.storage_path and os.path.exists(deck.storage_path):
+        try:
+            os.remove(deck.storage_path)
+        except Exception as e:
+            logger.warning(f"No se pudo borrar {deck.storage_path}: {e}")
+    # Regenerar
+    try:
+        _regenerate_pptx(deck, db)
+        return {"deck_id": deck.id, "storage_path": deck.storage_path, "status": "regenerated"}
+    except Exception as e:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, f"Error al regenerar: {str(e)[:200]}")
