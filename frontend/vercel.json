@@ -5,8 +5,5 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "outputDirectory": ".next",
-  "regions": ["iad1"],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@mbc-backend-url"
-  }
+  "regions": ["iad1"]
 }
