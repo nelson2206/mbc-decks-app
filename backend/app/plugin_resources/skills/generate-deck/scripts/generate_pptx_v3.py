@@ -135,29 +135,88 @@ def _set_bullets_in_body(slide, bullets: list[str]):
         p.level = 0
 
 
+def _normalize_bullets(body) -> list[str]:
+    """A4 puede devolver bullets como list[str] o body como list[{type,text,...}].
+    Esta función lo normaliza a list[str]."""
+    if not body:
+        return []
+    if isinstance(body, str):
+        return [body]
+    out = []
+    for item in body:
+        if isinstance(item, str):
+            out.append(item)
+        elif isinstance(item, dict):
+            if "text" in item:
+                out.append(str(item["text"]))
+            elif "key" in item and "value" in item:
+                out.append(f"{item['key']}: {item['value']}")
+            elif "label" in item and "value" in item:
+                out.append(f"{item['label']}: {item['value']}")
+    return out
+
+
+def _normalize_slide(s: dict, order_hint: int = 0) -> dict:
+    """Normaliza un slide al formato canónico que entiende este generador."""
+    bullets_raw = s.get("bullets") or s.get("body") or s.get("content") or []
+    return {
+        "order": s.get("order") or s.get("slide_order") or order_hint,
+        "layout_kind": s.get("layout_kind") or s.get("layout") or s.get("kind") or "context",
+        "title": s.get("title") or s.get("antetitle") or "",
+        "subtitle": s.get("subtitle") or "",
+        "bullets": _normalize_bullets(bullets_raw),
+        "note": s.get("note") or s.get("speaker_notes") or "",
+    }
+
+
+def _extract_slides_data(slide_content) -> list[dict]:
+    """Extrae la lista de slides desde cualquiera de los formatos que A4 puede devolver:
+       1) {"slides": [...]}
+       2) [{...}, {...}]   (lista directa)
+       3) {"1": {...}, "2": {...}}  (dict keyed by slide order — el formato real de A4 hoy)
+       4) {"raw": "..."}   (parser falló)  -> []
+    """
+    if isinstance(slide_content, list):
+        return [_normalize_slide(s, i+1) for i, s in enumerate(slide_content)]
+    if not isinstance(slide_content, dict):
+        return []
+    if "slides" in slide_content and isinstance(slide_content["slides"], list):
+        return [_normalize_slide(s, i+1) for i, s in enumerate(slide_content["slides"])]
+    if "raw" in slide_content:
+        return []
+    # Caso 3: dict con claves "1", "2", ... o numéricas
+    items = []
+    for k, v in slide_content.items():
+        if not isinstance(v, dict):
+            continue
+        try:
+            order = int(k)
+        except (ValueError, TypeError):
+            order = v.get("order") or v.get("slide_order") or 0
+        items.append((order, v))
+    items.sort(key=lambda x: x[0])
+    return [_normalize_slide(v, o or i+1) for i, (o, v) in enumerate(items)]
+
+
 def generate_from_content(
     slide_content: dict,
     deck_brief: dict,
     output_path: str,
 ) -> str:
-    """Construye el .pptx desde slide_content."""
+    """Construye el .pptx desde slide_content. Tolera múltiples formatos del A4."""
     template = _ensure_pptx_template()
     prs = Presentation(str(template))
     _strip_existing_slides(prs)
 
-    slides_data = slide_content.get("slides", [])
+    slides_data = _extract_slides_data(slide_content)
     if not slides_data:
-        # Fallback: si slide_content tiene otra forma, intentar interpretarlo
-        if isinstance(slide_content, list):
-            slides_data = slide_content
-        elif "raw" in slide_content:
-            # Si A4 devolvió algo no parseable, generar deck mínimo
-            slides_data = [{
-                "order": 1, "layout_kind": "cover",
-                "title": deck_brief.get("deck", {}).get("title_working", "Deck"),
-                "subtitle": deck_brief.get("client", {}).get("name_commercial", ""),
-                "bullets": [], "note": "Fallback porque A4 no devolvió JSON parseable",
-            }]
+        # Último recurso: deck mínimo de 1 slide para que el flujo no falle
+        slides_data = [{
+            "order": 1, "layout_kind": "cover",
+            "title": deck_brief.get("deck", {}).get("title_working", "Deck"),
+            "subtitle": deck_brief.get("client", {}).get("name_commercial", ""),
+            "bullets": [], "note": "Fallback: slide_content no tenía slides reconocibles. Revisar logs A4.",
+        }]
 
     n_layouts = len(prs.slide_layouts)
     for s in sorted(slides_data, key=lambda x: x.get("order", 0)):
