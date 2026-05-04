@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.db.session import engine
 from app.db.models import Base
 from app.db.migrations import run_migrations
+from app.db.seeder import seed_credentials
 from app.api.endpoints import auth, decks, interview, generate, audit, credentials
 
 
@@ -33,6 +34,14 @@ def create_app() -> FastAPI:
         if not inspector.has_table("users"):
             Base.metadata.create_all(bind=engine)
         run_migrations(engine)
+        # Seed credenciales del corpus
+        from app.db.session import SessionLocal
+        with SessionLocal() as db:
+            try:
+                seed_credentials(db)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Seed credenciales falló: {e}")
 
     @app.get("/health", tags=["health"])
     def health():
