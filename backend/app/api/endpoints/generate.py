@@ -14,7 +14,7 @@ from app.core.config import settings
 router = APIRouter(prefix="/api/generate", tags=["generate"])
 
 
-def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict):
+def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict, fast_mode: bool = False):
     """Background task: pipeline + auditoría visual. Cada paso actualiza progreso."""
     db: Session = SessionLocal()
     try:
@@ -59,8 +59,8 @@ def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict):
             deck.audit_status = "PASSED"  # asumir OK si A9 no corre
             db.commit()
 
-        # A6/A7/A8 reviews
-        if deck.audit_status != "BLOCKED":
+        # A6/A7/A8 reviews (skip si fast_mode)
+        if deck.audit_status != "BLOCKED" and not fast_mode:
             orchestrator.run_reviews(deck_id, db)
 
         # Final state
@@ -118,7 +118,7 @@ def generate_deck(
     deck.progress_percentage = 5
     deck.last_error = ""
     db.commit()
-    bg.add_task(_run_pipeline_background, deck_id, reference_pptx, edit_map)
+    bg.add_task(_run_pipeline_background, deck_id, reference_pptx, edit_map, getattr(req, 'fast_mode', False))
     return {"deck_id": deck_id, "status": "generation_queued"}
 
 

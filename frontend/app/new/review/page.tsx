@@ -26,6 +26,7 @@ function ReviewInner() {
   const deckId = params.get('deckId') || '';
   const [deck, setDeck] = useState<any>(null);
   const [retrying, setRetrying] = useState(false);
+  const [fastMode, setFastMode] = useState(false);
 
   const refreshDeck = async () => {
     if (!deckId) return null;
@@ -60,7 +61,7 @@ function ReviewInner() {
   const handleGenerate = async () => {
     setRetrying(true);
     try {
-      await generateApi.start(deckId);
+      await generateApi.start(deckId, { fast_mode: fastMode });
       await refreshDeck();
     } catch (e: any) {
       alert(e.response?.data?.detail || 'Error al iniciar generación');
@@ -97,8 +98,18 @@ function ReviewInner() {
             <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-magenta" /> Pipeline multi-agente
             </h2>
+            <p className="text-sm text-stone-600 mb-4">
+              El pipeline corre 7 agentes especializados (Investigador → Estructurador → Contenido → Visual → Auditor → 3 Revisores).
+              <strong> Tiempo estimado: 4-5 min</strong> (modo completo) · <strong>2-3 min</strong> (modo rápido).
+            </p>
+            <label className="flex items-center gap-2 mb-4 cursor-pointer">
+              <input type="checkbox" checked={fastMode} onChange={(e) => setFastMode(e.target.checked)} className="w-4 h-4 accent-magenta" />
+              <span className="text-sm text-pruno">
+                <strong>Modo rápido</strong> — saltar revisión Manager + Socios (-2.5 min · sin comentarios estratégicos)
+              </span>
+            </label>
             <button onClick={handleGenerate} disabled={retrying} className="btn-magenta inline-flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : 'Iniciar generación con IA'}
+              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : `Iniciar generación con IA${fastMode ? " (rápido)" : ""}`}
             </button>
           </div>
         )}

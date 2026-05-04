@@ -65,8 +65,9 @@ class InterviewSubmit(BaseModel):
 
 class GenerateRequest(BaseModel):
     deck_id: str
-    use_reference_deck_id: Optional[str] = None  # opcional: si elegir un deck de referencia específico
+    use_reference_deck_id: Optional[str] = None
     skip_audit: bool = False
+    fast_mode: bool = False  # Si True, salta A6/A7/A8 reviewers (-2.5 min)
 
 
 class AuditRequest(BaseModel):

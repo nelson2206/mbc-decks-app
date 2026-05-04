@@ -55,7 +55,7 @@ export const interview = {
 };
 
 export const generateApi = {
-  start: (deckId: string, opts?: any) =>
+  start: (deckId: string, opts?: { fast_mode?: boolean }) =>
     api.post(`/api/generate/${deckId}`, { deck_id: deckId, ...opts }).then((r) => r.data),
 };
 

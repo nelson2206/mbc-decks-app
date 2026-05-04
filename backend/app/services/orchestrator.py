@@ -86,7 +86,7 @@ def run_structure(deck: Deck, db: Session) -> dict:
         f"Brief:\n{json.dumps(brief, ensure_ascii=False, indent=2)}\n\n"
         f"Research:\n{research[:6000]}\n\nDevuelve JSON puro con cada slide adaptada."
     )
-    output = claude.call_agent("structurer", user_message, max_tokens=8192)
+    output = claude.call_agent("structurer", user_message, max_tokens=4096)
     try:
         skeleton = json.loads(output[output.index("{"):output.rindex("}") + 1])
     except (ValueError, json.JSONDecodeError):
@@ -113,7 +113,7 @@ def run_content(deck: Deck, db: Session) -> dict:
         f"Devuelve JSON con clave por slide_order."
     )
     output = claude.call_agent("content", user_message,
-                               extra_system_context=extra_context, max_tokens=8192)
+                               extra_system_context=extra_context, max_tokens=5120)
     try:
         content = json.loads(output[output.index("{"):output.rindex("}") + 1])
     except (ValueError, json.JSONDecodeError):
@@ -133,7 +133,7 @@ def run_review(deck: Deck, db: Session, agent_name: str) -> str:
         f"Contenido: {json.dumps(deck.slide_content, ensure_ascii=False)[:3000]}\n\n"
         f"Devuelve markdown estructurado con issues."
     )
-    return claude.call_agent(agent_name, user_message, max_tokens=4096)
+    return claude.call_agent(agent_name, user_message, max_tokens=2048)
 
 
 def run_full_pipeline(deck_id: str, db: Session) -> Deck:
@@ -175,18 +175,36 @@ def run_full_pipeline(deck_id: str, db: Session) -> Deck:
     return deck
 
 
-def run_reviews(deck_id: str, db: Session) -> dict[str, str]:
-    """A6/A7/A8 Manager + 2 Socios."""
+def run_reviews(deck_id: str, db: Session, parallel: bool = True) -> dict[str, str]:
+    """A6/A7/A8 Manager + 2 Socios. Por defecto en paralelo (3x más rápido)."""
     deck = db.query(Deck).filter(Deck.id == deck_id).first()
     if not deck:
         raise ValueError(f"Deck {deck_id} not found")
-    _set_progress(deck, db, "reviewing", "A6/A7/A8 Revisores", 90)
+    _set_progress(deck, db, "reviewing", "A6/A7/A8 Revisores (paralelo)", 90)
     reviews = {}
+    agents = ("manager", "partner_consulting", "partner_tech")
     try:
-        for agent in ("manager", "partner_consulting", "partner_tech"):
-            reviews[agent] = run_review(deck, db, agent)
-        deck.review_consolidated = "\n\n---\n\n".join(
-            f"# {n}\n\n{md}" for n, md in reviews.items()
+        if parallel:
+            from concurrent.futures import ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=3) as executor:
+                future_to_agent = {executor.submit(run_review, deck, db, a): a for a in agents}
+                for future in future_to_agent:
+                    agent = future_to_agent[future]
+                    try:
+                        reviews[agent] = future.result(timeout=120)
+                    except Exception as e:
+                        reviews[agent] = f"⚠ Error en {agent}: {str(e)[:200]}"
+        else:
+            for agent in agents:
+                reviews[agent] = run_review(deck, db, agent)
+        deck.review_consolidated = "
+
+---
+
+".join(
+            f"# {n}
+
+{md}" for n, md in reviews.items()
         )
         db.commit()
     except Exception as e:
