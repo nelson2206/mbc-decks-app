@@ -67,10 +67,6 @@ _BASE_INTERVIEW_BLOCKS = [
         "block": "1_cliente",
         "title": "Cliente y co-branding",
         "questions": [
-            {"id": "P1_1", "question": "Razón social formal", "type": "text"},
-            {"id": "P1_2", "question": "Sector / industria", "type": "single_choice",
-             "options": ["Banca y Finanzas", "Minería", "Retail", "Energía", "Sector Público",
-                         "Telco", "Industria/Manufactura", "Salud", "Construcción", "Agro", "Educación", "Otro"]},
             {"id": "P1_3", "question": "Logo del cliente (subir archivo)", "type": "file"},
             {"id": "P1_4", "question": "Color institucional primario (HEX o nombre)", "type": "text"},
             {"id": "P1_5", "question": "Imagen para portada o contexto (subir archivo)", "type": "file"},

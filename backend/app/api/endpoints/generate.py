@@ -25,13 +25,15 @@ def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict, 
         if deck.status == "error":
             return
 
-        # Generate .pptx
+        # Generate .pptx — v3 (build from scratch using A4 slide_content)
         deck = db.query(Deck).filter(Deck.id == deck_id).first()
         out_dir = Path(settings.storage_local_path) / "decks"
         out_dir.mkdir(parents=True, exist_ok=True)
         output = out_dir / f"{deck_id}.pptx"
         try:
-            deck_generator.generate_deck(reference_pptx, edit_map, str(output))
+            slide_content = deck.slide_content or {}
+            deck_brief = deck.deck_brief or {}
+            deck_generator.generate_deck_from_content(slide_content, deck_brief, str(output))
         except Exception as e:
             deck.status = "error"
             deck.progress_step = "Error en generación .pptx"
@@ -127,12 +129,9 @@ def generate_deck(
                 f"Pipeline en progreso (estado: {deck.status}). Espera unos segundos antes de reintentar."
             )
 
-    reference_pptx = req.use_reference_deck_id or _resolve_default_reference(deck.industry, deck.topic)
-    if not reference_pptx or not os.path.exists(reference_pptx):
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"No se encontró deck de referencia para topic={deck.topic} industry={deck.industry}"
-        )
+    # v3 build-from-scratch: ya no requerimos un reference deck.
+    # reference_pptx se conserva opcional por si se reactiva v2 en el futuro.
+    reference_pptx = req.use_reference_deck_id or ""
     edit_map = _build_edit_map_from_brief(deck.deck_brief)
 
     # Reset progress
