@@ -282,9 +282,16 @@ function ReviewInner() {
                     <div className="text-xs text-stone-600">Auditoría visual: <strong>{deck.audit_status}</strong></div>
                   </div>
                 </div>
-                <a href={decks.download(deck.id)} target="_blank" className="btn-primary inline-flex items-center gap-2">
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    try { await decks.download(deck.id, `${deck.client_name}_${deck.title}.pptx`); }
+                    catch (err: any) { alert(err.message || 'Error al descargar'); }
+                  }}
+                  className="btn-primary inline-flex items-center gap-2"
+                >
                   <Download className="w-4 h-4" /> Descargar .pptx
-                </a>
+                </button>
               </div>
             )}
 

@@ -84,12 +84,16 @@ export default function DashboardPage() {
                     Ver / Editar
                   </Link>
                   {d.status === 'ready' && (
-                    <a
-                      href={decks.download(d.id)} target="_blank"
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        try { await decks.download(d.id, `${d.client_name}_${d.title}.pptx`); }
+                        catch (err: any) { alert(err.message || 'Error al descargar'); }
+                      }}
                       className="btn-primary text-sm inline-flex items-center gap-1"
                     >
                       <Download className="w-3 h-3" /> Descargar
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>

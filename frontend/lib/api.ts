@@ -41,7 +41,26 @@ export const decks = {
   list: () => api.get('/api/decks').then((r) => r.data),
   create: (req: any) => api.post('/api/decks', req).then((r) => r.data),
   get: (id: string) => api.get(`/api/decks/${id}`).then((r) => r.data),
-  download: (id: string) => `${API_URL}/api/decks/${id}/download`,
+  download: async (id: string, fileName?: string) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('mbc_token') : null;
+    const resp = await fetch(`${API_URL}/api/decks/${id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({ detail: 'Error al descargar' }));
+      throw new Error(err.detail || 'Error al descargar');
+    }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName || `deck_${id.slice(0,8)}.pptx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
+  downloadUrl: (id: string) => `${API_URL}/api/decks/${id}/download`,
   remove: (id: string) => api.delete(`/api/decks/${id}`),
   cancel: (id: string) => api.post(`/api/decks/${id}/cancel`).then((r) => r.data),
 };
