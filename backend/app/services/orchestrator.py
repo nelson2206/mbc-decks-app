@@ -133,7 +133,7 @@ def run_review(deck: Deck, db: Session, agent_name: str) -> str:
         f"Contenido: {json.dumps(deck.slide_content, ensure_ascii=False)[:3000]}\n\n"
         f"Devuelve markdown estructurado con issues."
     )
-    return claude.call_agent(agent_name, user_message, max_tokens=2048)
+    return claude.call_agent(agent_name, user_message, max_tokens=4096)
 
 
 def run_full_pipeline(deck_id: str, db: Session) -> Deck:
