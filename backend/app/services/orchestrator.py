@@ -197,14 +197,8 @@ def run_reviews(deck_id: str, db: Session, parallel: bool = True) -> dict[str, s
         else:
             for agent in agents:
                 reviews[agent] = run_review(deck, db, agent)
-        deck.review_consolidated = "
-
----
-
-".join(
-            f"# {n}
-
-{md}" for n, md in reviews.items()
+        deck.review_consolidated = "\n\n---\n\n".join(
+            f"# {n}\n\n{md}" for n, md in reviews.items()
         )
         db.commit()
     except Exception as e:
