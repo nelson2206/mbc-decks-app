@@ -1,19 +1,33 @@
 'use client';
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Sparkles, AlertTriangle, CheckCircle, Loader2, Download, RotateCw, XCircle, StopCircle, Ban } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import {
+  Sparkles, AlertTriangle, CheckCircle, Loader2, Download, RotateCw, XCircle,
+  StopCircle, Ban, Search, Layers, FileText, Image as ImageIcon, Shield,
+  UserCheck, Briefcase, Cpu, Clock,
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { AuthGuard } from '@/components/AuthGuard';
 import { decks, generateApi, auditApi } from '@/lib/api';
 
-const PIPELINE_STEPS = [
-  { key: 'researching',  label: '🔬 A2 Investigador',     pct: 10 },
-  { key: 'structuring',  label: '🏗️ A3 Estructurador',    pct: 25 },
-  { key: 'writing',      label: '✍️ A4 Contenido',        pct: 50 },
-  { key: 'visual',       label: '🎨 A5 Visual + .pptx',   pct: 65 },
-  { key: 'audit',        label: '🛡️ A9 Auditoría visual', pct: 75 },
-  { key: 'reviewing',    label: '👥 A6/A7/A8 Revisores',  pct: 90 },
-  { key: 'ready',        label: '✅ Listo',               pct: 100 },
+type AgentStep = {
+  key: string;
+  label: string;
+  short: string;
+  desc: string;
+  icon: any;
+  pct: number;
+  estSec: number;
+};
+
+const PIPELINE_STEPS: AgentStep[] = [
+  { key: 'researching',  label: 'A2 · Investigador',     short: 'Research',    desc: 'Recopila data sectorial con fuentes citables',  icon: Search,     pct: 10, estSec: 70 },
+  { key: 'structuring',  label: 'A3 · Estructurador MBB', short: 'Structure',   desc: 'Define la storyline consultiva (Pirámide Minto · MECE)', icon: Layers,    pct: 25, estSec: 60 },
+  { key: 'writing',      label: 'A4 · Contenido',        short: 'Content',     desc: 'Redacta cada slide con knowledge base del tema', icon: FileText,   pct: 50, estSec: 90 },
+  { key: 'visual',       label: 'A5 · Visual + .pptx',   short: 'Visual',      desc: 'Mapea slides a layouts oficiales y genera el .pptx', icon: ImageIcon, pct: 65, estSec: 10 },
+  { key: 'audit',        label: 'A9 · Auditor visual',   short: 'Audit',       desc: 'Detecta branding hostil (competencia, otros clientes)', icon: Shield,    pct: 75, estSec: 20 },
+  { key: 'reviewing',    label: 'A6/A7/A8 · Revisores',  short: 'Reviewers',   desc: 'Manager + Socio Consultoría + Socio Tech (paralelo)', icon: UserCheck, pct: 90, estSec: 70 },
+  { key: 'ready',        label: 'Listo',                 short: 'Done',        desc: 'Deck listo para descargar', icon: CheckCircle, pct: 100, estSec: 0 },
 ];
 
 function getStepIndex(status: string): number {
@@ -27,6 +41,8 @@ function ReviewInner() {
   const [deck, setDeck] = useState<any>(null);
   const [retrying, setRetrying] = useState(false);
   const [fastMode, setFastMode] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [now, setNow] = useState<number>(Date.now());
 
   const refreshDeck = async () => {
     if (!deckId) return null;
@@ -35,38 +51,41 @@ function ReviewInner() {
     return d;
   };
 
-  useEffect(() => {
-    refreshDeck();
-  }, [deckId]);
+  useEffect(() => { refreshDeck(); }, [deckId]);
 
-  // Polling activo
+  // Polling activo + reloj
   useEffect(() => {
     if (!deck) return;
     const inProgress = ['generating','researching','structuring','writing','visual','audit','reviewing'].includes(deck.status);
     if (!inProgress) return;
-    const id = setInterval(refreshDeck, 4000);
+    if (!startTime) setStartTime(Date.now());
+    const id = setInterval(() => {
+      refreshDeck();
+      setNow(Date.now());
+    }, 4000);
     return () => clearInterval(id);
   }, [deck?.status]);
 
-  const handleCancel = async () => {
-    if (!confirm('¿Cancelar la generación? Lo que esté en curso se detendrá tras el agente actual.')) return;
-    try {
-      await decks.cancel(deckId);
-      await refreshDeck();
-    } catch (e: any) {
-      alert(e.response?.data?.detail || 'Error al cancelar');
-    }
-  };
-
   const handleGenerate = async () => {
     setRetrying(true);
+    setStartTime(Date.now());
     try {
       await generateApi.start(deckId, { fast_mode: fastMode });
       await refreshDeck();
     } catch (e: any) {
-      alert(e.response?.data?.detail || 'Error al iniciar generación');
+      alert(e.response?.data?.detail || 'Error al iniciar');
     } finally {
       setRetrying(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!confirm('¿Detener la generación? El agente actual completará pero los siguientes se omitirán.')) return;
+    try {
+      await decks.cancel(deckId);
+      await refreshDeck();
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Error al detener');
     }
   };
 
@@ -80,128 +99,188 @@ function ReviewInner() {
   const isInitial = ['interviewing_done','draft'].includes(deck.status);
   const currentStepIdx = getStepIndex(deck.status);
   const pct = deck.progress_percentage || 0;
+  const elapsed = startTime ? Math.floor((now - startTime)/1000) : 0;
+  const totalEstimate = fastMode ? 165 : 320;
+  const remaining = Math.max(totalEstimate - elapsed, 0);
 
   return (
     <AuthGuard>
-      <div className="max-w-4xl">
-        <h1 className="text-3xl font-bold text-pruno mb-2">{deck.title}</h1>
-        <p className="text-stone-600 mb-8">
-          Cliente: <strong>{deck.client_name}</strong> · Tema: <strong>{deck.topic}</strong> · Estado:{' '}
-          <strong className={isError ? 'text-magenta' : isReady ? 'text-verde' : 'text-amazonico'}>
-            {deck.progress_step || deck.status}
-          </strong>
-        </p>
-
-        {/* Botón de inicio si no ha arrancado */}
-        {isInitial && (
-          <div className="card mb-6">
-            <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-magenta" /> Pipeline multi-agente
-            </h2>
-            <p className="text-sm text-stone-600 mb-4">
-              El pipeline corre 7 agentes especializados (Investigador → Estructurador → Contenido → Visual → Auditor → 3 Revisores).
-              <strong> Tiempo estimado: 4-5 min</strong> (modo completo) · <strong>2-3 min</strong> (modo rápido).
-            </p>
-            <label className="flex items-center gap-2 mb-4 cursor-pointer">
-              <input type="checkbox" checked={fastMode} onChange={(e) => setFastMode(e.target.checked)} className="w-4 h-4 accent-magenta" />
-              <span className="text-sm text-pruno">
-                <strong>Modo rápido</strong> — saltar revisión Manager + Socios (-2.5 min · sin comentarios estratégicos)
-              </span>
-            </label>
-            <button onClick={handleGenerate} disabled={retrying} className="btn-magenta inline-flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : `Iniciar generación con IA${fastMode ? " (rápido)" : ""}`}
-            </button>
+      <div className="max-w-5xl">
+        {/* Header con título y meta */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-pruno mb-1">{deck.title}</h1>
+          <div className="flex items-center gap-3 text-sm text-stone-600">
+            <span>Cliente: <strong className="text-pruno">{deck.client_name}</strong></span>
+            <span>·</span>
+            <span>Tema: <strong className="text-pruno">{deck.topic}</strong></span>
+            <span>·</span>
+            <span>Industria: <strong className="text-pruno">{deck.industry?.replace(/_/g,' ')}</strong></span>
           </div>
-        )}
+        </div>
 
-        {/* Barra de progreso */}
-        {(inProgress || isReady || isError) && (
-          <div className="card mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-semibold text-pruno flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-magenta" /> Progreso del pipeline
-              </h2>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl font-bold text-pruno">{pct}%</span>
-                {inProgress && (
-                  <button
-                    onClick={handleCancel}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-chamfer border border-magenta text-magenta hover:bg-magenta/10 text-sm"
-                  >
-                    <StopCircle className="w-4 h-4" /> Cancelar
-                  </button>
-                )}
-              </div>
+        {/* Botón inicial */}
+        {isInitial && (
+          <div className="card mb-6 border-l-4 border-magenta">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-6 h-6 text-magenta" />
+              <h2 className="text-xl font-bold text-pruno">Pipeline multi-agente listo para arrancar</h2>
             </div>
-            <div className="h-3 bg-stone-200 rounded-full overflow-hidden mb-4">
-              <div
-                className={`h-3 rounded-full transition-all duration-500 ${
-                  isError ? 'bg-magenta' : isReady ? 'bg-verde' : 'bg-magenta animate-pulse'
-                }`}
-                style={{ width: `${pct}%` }}
-              />
-            </div>
+            <p className="text-sm text-stone-600 mb-4">
+              7 agentes especializados trabajarán en cadena para producir tu deck. Tiempo total: <strong>~5 min</strong> (completo) o <strong>~3 min</strong> (rápido).
+            </p>
 
-            <div className="space-y-2">
-              {PIPELINE_STEPS.map((step, i) => {
-                let icon, color;
-                if (isError && i === currentStepIdx) {
-                  icon = <XCircle className="w-4 h-4 text-magenta" />;
-                  color = 'text-magenta font-semibold';
-                } else if (i < currentStepIdx || isReady) {
-                  icon = <CheckCircle className="w-4 h-4 text-verde" />;
-                  color = 'text-verde';
-                } else if (i === currentStepIdx && inProgress) {
-                  icon = <Loader2 className="w-4 h-4 text-amazonico animate-spin" />;
-                  color = 'text-amazonico font-semibold';
-                } else {
-                  icon = <div className="w-4 h-4 rounded-full border-2 border-stone-300" />;
-                  color = 'text-stone-400';
-                }
+            {/* Preview de los 7 agentes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-5">
+              {PIPELINE_STEPS.slice(0, 6).map((s) => {
+                const Icon = s.icon;
+                const skipped = fastMode && s.key === 'reviewing';
                 return (
-                  <div key={step.key} className={`flex items-center gap-3 ${color}`}>
-                    {icon}
-                    <span className="text-sm">{step.label}</span>
-                    {i === currentStepIdx && inProgress && (
-                      <span className="text-xs text-stone-500 ml-auto">en curso…</span>
-                    )}
+                  <div key={s.key} className={`flex items-start gap-2 p-2 rounded-chamfer ${skipped ? 'opacity-40 line-through' : 'bg-ceramica/30'}`}>
+                    <Icon className="w-4 h-4 text-pruno mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="text-xs font-semibold text-pruno">{s.label}</div>
+                      <div className="text-xs text-stone-600">{s.desc}</div>
+                    </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Cancelled */}
-            {isCancelled && (
-              <div className="mt-4 bg-stone-100 p-4 rounded-chamfer">
-                <div className="flex items-center gap-2 text-stone-700 font-semibold mb-2">
-                  <Ban className="w-4 h-4" /> Generación cancelada por el usuario
+            <label className="flex items-center gap-2 mb-4 cursor-pointer p-3 rounded-chamfer border border-stone-200 hover:bg-stone-50">
+              <input type="checkbox" checked={fastMode} onChange={(e) => setFastMode(e.target.checked)} className="w-4 h-4 accent-magenta" />
+              <div>
+                <span className="text-sm font-semibold text-pruno">Modo rápido</span>
+                <span className="text-xs text-stone-600 ml-2">— salta revisión Manager + Socios (-2.5 min · sin comentarios estratégicos)</span>
+              </div>
+            </label>
+
+            <button onClick={handleGenerate} disabled={retrying} className="btn-magenta inline-flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : `Iniciar generación${fastMode ? ' (rápido)' : ''}`}
+            </button>
+          </div>
+        )}
+
+        {/* Barra de progreso general (cuando hay actividad) */}
+        {(inProgress || isReady || isError || isCancelled) && (
+          <div className="card mb-6">
+            <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-5 h-5 text-magenta" />
+                  <h2 className="font-bold text-pruno text-lg">Pipeline multi-agente</h2>
                 </div>
-                <p className="text-sm text-stone-600 mb-3">Puedes volver a iniciar el pipeline cuando quieras.</p>
+                <p className="text-sm text-stone-600">
+                  {isReady ? '✅ Completado' : isError ? '⚠ Error' : isCancelled ? '⏸ Cancelado' : `Ejecutando · ${deck.progress_step || 'iniciando'}`}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                {inProgress && (
+                  <div className="flex items-center gap-1 text-sm text-stone-500">
+                    <Clock className="w-4 h-4" />
+                    <span>{Math.floor(elapsed/60)}:{String(elapsed%60).padStart(2,'0')}</span>
+                    <span className="text-xs">/ ~{Math.floor(totalEstimate/60)} min</span>
+                  </div>
+                )}
+                <div className={`text-3xl font-bold ${isError ? 'text-magenta' : isReady ? 'text-verde' : 'text-pruno'}`}>{pct}%</div>
+                {(inProgress || isError) && (
+                  <button onClick={handleCancel} className="inline-flex items-center gap-1 px-3 py-2 rounded-chamfer border border-magenta text-magenta hover:bg-magenta hover:text-white text-sm font-medium transition">
+                    <StopCircle className="w-4 h-4" /> Detener
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Barra principal */}
+            <div className="h-3 bg-stone-200 rounded-full overflow-hidden mb-6 relative">
+              <div
+                className={`h-3 rounded-full transition-all duration-700 ${
+                  isError ? 'bg-magenta' : isReady ? 'bg-verde' : isCancelled ? 'bg-stone-400' : 'bg-gradient-to-r from-magenta to-lila animate-pulse'
+                }`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+
+            {/* Cards por agente */}
+            <div className="space-y-2">
+              {PIPELINE_STEPS.slice(0, 7).map((step, i) => {
+                const Icon = step.icon;
+                let cardClass = '', iconBg = '', textColor = '', timeLabel = '';
+                if (isError && i === currentStepIdx) {
+                  cardClass = 'bg-magenta/5 border-magenta';
+                  iconBg = 'bg-magenta text-white';
+                  textColor = 'text-magenta';
+                  timeLabel = 'Falló';
+                } else if (i < currentStepIdx || isReady) {
+                  cardClass = 'bg-verde/5 border-verde/30';
+                  iconBg = 'bg-verde text-white';
+                  textColor = 'text-verde';
+                  timeLabel = `~${step.estSec}s`;
+                } else if (i === currentStepIdx && inProgress) {
+                  cardClass = 'bg-amazonico/5 border-amazonico animate-pulse';
+                  iconBg = 'bg-amazonico text-white';
+                  textColor = 'text-amazonico';
+                  timeLabel = 'En curso…';
+                } else {
+                  cardClass = 'bg-stone-50 border-stone-200';
+                  iconBg = 'bg-stone-200 text-stone-400';
+                  textColor = 'text-stone-400';
+                  timeLabel = `~${step.estSec}s`;
+                }
+                const isCurrent = i === currentStepIdx && inProgress;
+                return (
+                  <div key={step.key} className={`flex items-center gap-3 p-3 rounded-chamfer border ${cardClass}`}>
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center ${iconBg} flex-shrink-0`}>
+                      {isCurrent ? <Loader2 className="w-5 h-5 animate-spin" /> :
+                       isError && i === currentStepIdx ? <XCircle className="w-5 h-5" /> :
+                       (i < currentStepIdx || isReady) ? <CheckCircle className="w-5 h-5" /> :
+                       <Icon className="w-5 h-5" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-sm font-semibold ${textColor}`}>{step.label}</div>
+                      <div className="text-xs text-stone-600">{step.desc}</div>
+                    </div>
+                    <div className={`text-xs ${textColor} text-right whitespace-nowrap`}>{timeLabel}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Cancelado */}
+            {isCancelled && (
+              <div className="mt-5 bg-stone-100 p-4 rounded-chamfer border border-stone-300">
+                <div className="flex items-center gap-2 text-stone-700 font-semibold mb-2"><Ban className="w-4 h-4" /> Generación detenida</div>
+                <p className="text-sm text-stone-600 mb-3">{deck.last_error || 'Cancelado por el usuario'}</p>
                 <button onClick={handleGenerate} disabled={retrying} className="btn-primary inline-flex items-center gap-2">
-                  <RotateCw className="w-4 h-4" /> {retrying ? 'Reiniciando…' : 'Reiniciar generación'}
+                  <RotateCw className="w-4 h-4" /> {retrying ? 'Reiniciando…' : 'Reiniciar'}
                 </button>
               </div>
             )}
 
-            {/* Error display */}
-            {isError && deck.last_error && (
-              <div className="mt-4 bg-magenta/10 p-4 rounded-chamfer">
-                <div className="flex items-center gap-2 text-magenta font-semibold mb-2">
-                  <AlertTriangle className="w-4 h-4" /> El pipeline se detuvo
+            {/* Error */}
+            {isError && (
+              <div className="mt-5 bg-magenta/10 p-4 rounded-chamfer border border-magenta/30">
+                <div className="flex items-center gap-2 text-magenta font-semibold mb-2"><AlertTriangle className="w-4 h-4" /> El pipeline se detuvo</div>
+                <code className="block text-xs text-stone-700 font-mono mb-3 break-words bg-white p-2 rounded">{deck.last_error || 'Error desconocido'}</code>
+                <div className="flex gap-2">
+                  <button onClick={handleGenerate} disabled={retrying} className="btn-primary inline-flex items-center gap-2">
+                    <RotateCw className="w-4 h-4" /> {retrying ? 'Reintentando…' : 'Reintentar'}
+                  </button>
+                  <button onClick={handleCancel} className="btn-secondary inline-flex items-center gap-2">
+                    <Ban className="w-4 h-4" /> Marcar como cancelado
+                  </button>
                 </div>
-                <code className="block text-xs text-stone-700 font-mono mb-3 break-words">{deck.last_error}</code>
-                <button onClick={handleGenerate} disabled={retrying} className="btn-primary inline-flex items-center gap-2">
-                  <RotateCw className="w-4 h-4" /> {retrying ? 'Reintentando…' : 'Reintentar'}
-                </button>
               </div>
             )}
 
             {/* Ready: descarga */}
             {isReady && (
-              <div className="mt-4 flex items-center justify-between bg-verde/10 p-4 rounded-chamfer">
+              <div className="mt-5 flex items-center justify-between bg-gradient-to-r from-verde/10 to-amazonico/10 p-4 rounded-chamfer border border-verde/30">
                 <div className="flex items-center gap-2 text-verde">
-                  <CheckCircle className="w-5 h-5" />
-                  <span className="font-semibold">Deck listo · auditoría {deck.audit_status}</span>
+                  <CheckCircle className="w-6 h-6" />
+                  <div>
+                    <div className="font-bold">Deck listo</div>
+                    <div className="text-xs text-stone-600">Auditoría visual: <strong>{deck.audit_status}</strong></div>
+                  </div>
                 </div>
                 <a href={decks.download(deck.id)} target="_blank" className="btn-primary inline-flex items-center gap-2">
                   <Download className="w-4 h-4" /> Descargar .pptx
@@ -211,10 +290,8 @@ function ReviewInner() {
 
             {/* Blocked */}
             {isBlocked && deck.status !== 'error' && (
-              <div className="mt-4 bg-magenta/10 p-4 rounded-chamfer">
-                <div className="flex items-center gap-2 text-magenta font-semibold mb-2">
-                  <AlertTriangle className="w-4 h-4" /> Bloqueado por A9 (branding hostil detectado)
-                </div>
+              <div className="mt-5 bg-magenta/10 p-4 rounded-chamfer border border-magenta/30">
+                <div className="flex items-center gap-2 text-magenta font-semibold mb-2"><AlertTriangle className="w-4 h-4" /> Bloqueado por A9 (branding hostil)</div>
                 <p className="text-sm text-stone-700">Revisa el reporte abajo y reemplaza las imágenes flageadas antes de descargar.</p>
               </div>
             )}
@@ -229,11 +306,11 @@ function ReviewInner() {
               Auditoría visual A9 · <span className="font-mono text-sm">{deck.audit_status}</span>
             </h2>
             {deck.audit_report.summary && (
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <Stat label="Críticos" value={deck.audit_report.summary.critical} color="text-magenta" />
-                <Stat label="Warnings" value={deck.audit_report.summary.warning} color="text-naranja" />
-                <Stat label="Neutrales" value={deck.audit_report.summary.neutral} color="text-stone-600" />
-                <Stat label="Aprobados" value={deck.audit_report.summary.approved} color="text-verde" />
+              <div className="grid grid-cols-4 gap-4">
+                <Stat label="🚨 Críticos"  value={deck.audit_report.summary.critical} color="text-magenta" />
+                <Stat label="⚠ Warnings"  value={deck.audit_report.summary.warning}  color="text-naranja" />
+                <Stat label="ℹ Neutrales" value={deck.audit_report.summary.neutral}  color="text-stone-600" />
+                <Stat label="✅ Aprobados" value={deck.audit_report.summary.approved} color="text-verde" />
               </div>
             )}
           </div>
@@ -242,7 +319,7 @@ function ReviewInner() {
         {/* Reviews */}
         {deck.review_consolidated && (
           <div className="card">
-            <h2 className="font-semibold text-pruno mb-4">Revisión Manager + Socios</h2>
+            <h2 className="font-semibold text-pruno mb-4 flex items-center gap-2"><Briefcase className="w-5 h-5 text-magenta" /> Revisión Manager + Socios</h2>
             <div className="prose prose-sm max-w-none">
               <ReactMarkdown>{deck.review_consolidated}</ReactMarkdown>
             </div>
@@ -256,8 +333,8 @@ function ReviewInner() {
 function Stat({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div className="text-center bg-ceramica/40 p-3 rounded-chamfer">
-      <div className={`text-2xl font-bold ${color}`}>{value}</div>
-      <div className="text-xs text-stone-600">{label}</div>
+      <div className={`text-3xl font-bold ${color}`}>{value}</div>
+      <div className="text-xs text-stone-600 mt-1">{label}</div>
     </div>
   );
 }
