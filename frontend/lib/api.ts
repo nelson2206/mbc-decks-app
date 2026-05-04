@@ -68,4 +68,5 @@ export const credentialsApi = {
   search: (params: { topic?: string; industry?: string; client?: string; keyword?: string }) =>
     api.get('/api/credentials', { params }).then((r) => r.data),
   topics: () => api.get('/api/credentials/topics').then((r) => r.data),
+  detail: (id: string) => api.get(`/api/credentials/${id}`).then((r) => r.data),
 };

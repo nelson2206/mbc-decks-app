@@ -36,3 +36,28 @@ def search_credentials(
 def list_topics(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     rows = db.query(Credential.topic).distinct().all()
     return {"topics": sorted([r[0] for r in rows if r[0]])}
+
+@router.get("/{credential_id}")
+def get_credential_detail(credential_id: str, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Detalle completo de una credencial para preview."""
+    cred = db.query(Credential).filter(Credential.id == credential_id, Credential.is_active == True).first()
+    if not cred:
+        from fastapi import HTTPException, status as http_status
+        raise HTTPException(http_status.HTTP_404_NOT_FOUND, "Credencial no encontrada")
+    md = cred.metadata_json or {}
+    preview = md.get("slide_text_preview", "")
+    # Estructurar preview en bullets
+    import re
+    parts = [p.strip() for p in re.split(r'\s*\|\s*|\s*\n\s*', preview) if p and p.strip() and len(p.strip()) > 5]
+    return {
+        "id": cred.id,
+        "client": cred.client,
+        "industry": cred.industry,
+        "topic": cred.topic,
+        "year": cred.year,
+        "title": md.get("title", ""),
+        "source_deck": md.get("source_deck", ""),
+        "bullets": parts[:12],
+        "raw_text": preview,
+        "storage_path": cred.storage_path,
+    }
