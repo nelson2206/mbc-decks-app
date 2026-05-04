@@ -42,6 +42,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-pruno">Mis decks</h1>
+          {/* build: 2026-05-04T23:38 — botón Regenerar desplegado */}
           <p className="text-stone-600 mt-1">Tus presentaciones generadas con MBC Decks</p>
         </div>
         <Link href="/new" className="btn-primary inline-flex items-center gap-2">
