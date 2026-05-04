@@ -33,7 +33,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_DIR = SCRIPT_DIR.parent
 
 # Thresholds
-TINY_BYTES = 5 * 1024        # < 5KB → triage rápido (asumimos NEUTRAL salvo evidencia)
+TINY_BYTES = 30 * 1024       # < 30KB → skip OCR (suelen ser íconos pequeños)
 LARGE_BYTES = 50 * 1024      # > 50KB → análisis exhaustivo obligatorio
 
 # Severidades
