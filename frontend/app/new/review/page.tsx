@@ -41,6 +41,8 @@ function ReviewInner() {
   const [deck, setDeck] = useState<any>(null);
   const [retrying, setRetrying] = useState(false);
   const [fastMode, setFastMode] = useState(false);
+  const [regenModalOpen, setRegenModalOpen] = useState(false);
+  const [regenTurbo, setRegenTurbo] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [now, setNow] = useState<number>(Date.now());
 
@@ -65,6 +67,23 @@ function ReviewInner() {
     }, 4000);
     return () => clearInterval(id);
   }, [deck?.status]);
+
+  const handleRegenerateWithTurbo = async () => {
+    setRegenModalOpen(false);
+    const turbo = regenTurbo;
+    setFastMode(turbo);
+    setRetrying(true);
+    setStartTime(Date.now());
+    try {
+      await generateApi.start(deckId, { fast_mode: turbo });
+      await refreshDeck();
+    } catch (e: any) {
+      alert(e.response?.data?.detail || 'Error al regenerar');
+    } finally {
+      setRetrying(false);
+    }
+    setRegenTurbo(false);
+  };
 
   const handleGenerate = async () => {
     setRetrying(true);
@@ -290,10 +309,7 @@ function ReviewInner() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={async () => {
-                      if (!confirm('¿Regenerar el deck con el mismo prompt? Toma 3-5 min y reemplaza el .pptx actual.')) return;
-                      await handleGenerate();
-                    }}
+                    onClick={() => setRegenModalOpen(true)}
                     disabled={retrying}
                     className="btn-secondary inline-flex items-center gap-2"
                     title="Re-corre todo el pipeline usando el mismo brief y entrevista"
@@ -352,6 +368,64 @@ function ReviewInner() {
           </div>
         )}
       </div>
+
+      {/* Modal: Regenerar con toggle Modo Turbo */}
+      {regenModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setRegenModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-chamfer p-6 max-w-md w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-pruno mb-2">Regenerar deck</h3>
+            <p className="text-sm text-stone-600 mb-4">
+              Vas a re-correr el pipeline completo para <strong>"{deck?.title}"</strong> usando el mismo brief y entrevista. Esto reemplazará el .pptx actual.
+            </p>
+
+            <label className="flex items-start gap-3 p-3 border border-stone-200 rounded-chamfer cursor-pointer hover:border-pruno mb-4">
+              <input
+                type="checkbox"
+                checked={regenTurbo}
+                onChange={(e) => setRegenTurbo(e.target.checked)}
+                className="w-4 h-4 accent-magenta mt-0.5"
+              />
+              <div>
+                <div className="font-semibold text-pruno text-sm">⚡ Modo Turbo</div>
+                <div className="text-xs text-stone-600 mt-0.5 leading-relaxed">
+                  Salta TODAS las revisiones — A6 Manager loop, A7 Partner Consulting, A8 Partner Tech y A9 Auditor Visual.
+                  Solo corren A2, A3, A4 y la generación del .pptx. Termina en ~2 min en lugar de ~5-8 min.
+                </div>
+                <div className="text-xs text-naranja mt-1">
+                  ⚠️ Sin verificación de branding hostil ni feedback de los Socios. Solo para drafts rápidos.
+                </div>
+              </div>
+            </label>
+
+            <div className="text-xs text-stone-500 mb-4">
+              Tiempo estimado: <strong>{regenTurbo ? "~2 min" : "~5-8 min"}</strong>
+              {regenTurbo && <span className="ml-2 text-naranja">· sin Manager · sin Partners · sin A9</span>}
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setRegenModalOpen(false)}
+                className="btn-secondary text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRegenerateWithTurbo}
+                className="btn-primary text-sm inline-flex items-center gap-2"
+              >
+                <RotateCw className="w-4 h-4" />
+                {regenTurbo ? "Regenerar Turbo" : "Regenerar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthGuard>
   );
 }
