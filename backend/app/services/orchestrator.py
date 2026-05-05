@@ -37,7 +37,8 @@ def _check_cancelled(deck: Deck, db: Session) -> bool:
 
 
 def _extract_json(text: str) -> dict:
-    """Extrae JSON de la respuesta del LLM, manejando ```json blocks y texto extra."""
+    """Extrae JSON de la respuesta del LLM, manejando ```json blocks, texto extra
+    y JSON truncado (cierra strings/objetos/arrays incompletos best-effort)."""
     import re
     if not text:
         return {}
@@ -45,25 +46,77 @@ def _extract_json(text: str) -> dict:
     m = re.search(r'```(?:json)?\s*([\s\S]*?)```', text)
     if m:
         text = m.group(1).strip()
-    # Find largest balanced { ... } block
     text = text.strip()
     if not text.startswith('{'):
-        # Buscar el primer { y último }
         try:
             start = text.index('{')
-            end = text.rindex('}')
-            text = text[start:end+1]
+            text = text[start:]
         except ValueError:
             return {"raw": text}
+    # Intentar parse directo
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        # Intentar repair simple: trailing comma
-        text2 = re.sub(r',(\s*[}\]])', r'\1', text)
+        pass
+    # Quitar trailing commas
+    text2 = re.sub(r',(\s*[}\]])', r'\1', text)
+    try:
+        return json.loads(text2)
+    except json.JSONDecodeError:
+        pass
+    # JSON truncado: cerrarlo best-effort.
+    # Cuenta {, }, [, ], y comillas no escapadas para reconstruir el cierre.
+    repaired = _repair_truncated_json(text)
+    if repaired is not None:
         try:
-            return json.loads(text2)
+            return json.loads(repaired)
         except json.JSONDecodeError:
-            return {"raw": text[:5000]}
+            pass
+    # Último recurso: guardar todo el raw (NO truncar a 5000)
+    return {"raw": text}
+
+
+def _repair_truncated_json(text: str) -> str | None:
+    """Best-effort: cerrar un JSON cortado al final.
+    Detecta strings sin cerrar, objetos/arrays abiertos y los completa."""
+    in_string = False
+    escape = False
+    stack = []  # contains '{' or '['
+    last_complete_end = -1
+    for i, c in enumerate(text):
+        if escape:
+            escape = False
+            continue
+        if c == '\\':
+            escape = True
+            continue
+        if c == '"' and not escape:
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if c in '{[':
+            stack.append(c)
+        elif c == '}':
+            if stack and stack[-1] == '{':
+                stack.pop()
+                if not stack:
+                    last_complete_end = i
+        elif c == ']':
+            if stack and stack[-1] == '[':
+                stack.pop()
+                if not stack:
+                    last_complete_end = i
+    # Si llegamos al final con string abierta o stack pendiente, cerrar
+    out = text
+    if in_string:
+        out += '"'
+    # Quitar trailing comma antes de cerrar
+    out = out.rstrip().rstrip(',')
+    while stack:
+        ch = stack.pop()
+        out += '}' if ch == '{' else ']'
+    return out if out != text else None
 
 
 def _set_progress(deck: Deck, db: Session, step_key: str, label: str, pct: int):
@@ -145,7 +198,7 @@ def run_content(deck: Deck, db: Session) -> dict:
         f"Devuelve JSON con clave por slide_order."
     )
     output = claude.call_agent("content", user_message,
-                               extra_system_context=extra_context, max_tokens=5120)
+                               extra_system_context=extra_context, max_tokens=16384)
     content = _extract_json(output)
     deck.slide_content = content
     flag_modified(deck, "slide_content")
