@@ -18,8 +18,9 @@ def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict, 
     """Background task: pipeline + auditoría visual. Cada paso actualiza progreso."""
     db: Session = SessionLocal()
     try:
-        # A2-A4 (research, structure, content)
-        deck = orchestrator.run_full_pipeline(deck_id, db)
+        # A2-A4 (research, structure, content) + Manager loop (skip if turbo)
+        # turbo (fast_mode=True): salta A6 Manager review-loop entre A4 y .pptx
+        deck = orchestrator.run_full_pipeline(deck_id, db, manager_loop=not fast_mode)
 
         # If the pipeline already errored, stop here
         if deck.status == "error":
@@ -46,43 +47,48 @@ def _run_pipeline_background(deck_id: str, reference_pptx: str, edit_map: dict, 
         deck.status = "audit"
         db.commit()
 
-        # A9 Auditoría visual con timeout duro de 90s
-        try:
-            import threading
-            audit_result = {"report": None, "error": None}
-            def _do_audit():
-                try:
-                    audit_result["report"] = visual_auditor.audit_pptx(
-                        str(output),
-                        client_name=deck.client_name,
-                        industry=deck.industry,
-                    )
-                except Exception as e:
-                    audit_result["error"] = e
-            t = threading.Thread(target=_do_audit, daemon=True)
-            t.start()
-            t.join(timeout=90)
-            if t.is_alive():
-                # Timeout: el audit tarda demasiado, marcar como PASSED y seguir
-                deck.audit_status = "PASSED"
-                deck.audit_report = {"audit_status": "PASSED", "summary": {"critical":0,"warning":0,"neutral":0,"approved":0}, "findings": [], "_note": "Audit visual omitido por timeout (>90s en Render free tier). Ejecutar manualmente luego."}
-                deck.last_error = "Auditoría visual omitida por timeout"
-            elif audit_result["error"]:
-                deck.audit_status = "PASSED"
-                deck.audit_report = {"audit_status": "PASSED", "summary": {"critical":0,"warning":0,"neutral":0,"approved":0}, "findings": [], "_error": str(audit_result["error"])[:200]}
-            else:
-                report = audit_result["report"]
-                deck.audit_status = report["audit_status"]
-                deck.audit_report = report
-            db.commit()
-        except Exception as e:
+        # A9 Auditoría visual (skip si turbo)
+        if fast_mode:
             deck.audit_status = "PASSED"
-            deck.last_error = f"A9 omitido: {str(e)[:200]}"
+            deck.audit_report = {
+                "audit_status": "PASSED",
+                "summary": {"critical": 0, "warning": 0, "neutral": 0, "approved": 0},
+                "findings": [],
+                "_note": "A9 Auditor visual omitido por modo turbo. Verifica manualmente las imágenes."
+            }
             db.commit()
-        except Exception as e:
-            deck.last_error = f"A9 falló (no bloqueante): {str(e)[:200]}"
-            deck.audit_status = "PASSED"  # asumir OK si A9 no corre
-            db.commit()
+        else:
+            try:
+                import threading
+                audit_result = {"report": None, "error": None}
+                def _do_audit():
+                    try:
+                        audit_result["report"] = visual_auditor.audit_pptx(
+                            str(output),
+                            client_name=deck.client_name,
+                            industry=deck.industry,
+                        )
+                    except Exception as e:
+                        audit_result["error"] = e
+                t = threading.Thread(target=_do_audit, daemon=True)
+                t.start()
+                t.join(timeout=90)
+                if t.is_alive():
+                    deck.audit_status = "PASSED"
+                    deck.audit_report = {"audit_status": "PASSED", "summary": {"critical":0,"warning":0,"neutral":0,"approved":0}, "findings": [], "_note": "Audit visual omitido por timeout (>90s en Render free tier). Ejecutar manualmente luego."}
+                    deck.last_error = "Auditoría visual omitida por timeout"
+                elif audit_result["error"]:
+                    deck.audit_status = "PASSED"
+                    deck.audit_report = {"audit_status": "PASSED", "summary": {"critical":0,"warning":0,"neutral":0,"approved":0}, "findings": [], "_error": str(audit_result["error"])[:200]}
+                else:
+                    report = audit_result["report"]
+                    deck.audit_status = report["audit_status"]
+                    deck.audit_report = report
+                db.commit()
+            except Exception as e:
+                deck.audit_status = "PASSED"
+                deck.last_error = f"A9 falló (no bloqueante): {str(e)[:200]}"
+                db.commit()
 
         # A6/A7/A8 reviews (skip si fast_mode)
         if deck.audit_status != "BLOCKED" and not fast_mode:

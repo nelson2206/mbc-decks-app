@@ -32,10 +32,27 @@ const STATUS_LABEL: Record<string, { label: string; icon: any; color: string }> 
 export default function DashboardPage() {
   const [items, setItems] = useState<DeckItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [regenModal, setRegenModal] = useState<{deck: DeckItem | null; turbo: boolean}>({
+    deck: null, turbo: false,
+  });
 
   useEffect(() => {
     decks.list().then(setItems).finally(() => setLoading(false));
   }, []);
+
+  const handleRegenerate = async () => {
+    if (!regenModal.deck) return;
+    const d = regenModal.deck;
+    const turbo = regenModal.turbo;
+    setRegenModal({ deck: null, turbo: false });
+    try {
+      await generateApi.start(d.id, { fast_mode: turbo });
+      decks.list().then(setItems);
+      alert(`Regeneración iniciada${turbo ? " (modo turbo)" : ""}. Mira el progreso en "Ver / Editar".`);
+    } catch (err: any) {
+      alert(err.response?.data?.detail || "Error al regenerar");
+    }
+  };
 
   return (
     <AuthGuard>
@@ -86,17 +103,9 @@ export default function DashboardPage() {
                   </Link>
                   {(d.status === 'ready' || d.status === 'error' || d.status === 'blocked') && (
                     <button
-                      onClick={async (e) => {
+                      onClick={(e) => {
                         e.preventDefault();
-                        if (!confirm(`¿Regenerar "${d.title}" con el mismo prompt? Toma 3-5 min y reemplaza el .pptx actual.`)) return;
-                        try {
-                          await generateApi.start(d.id, { fast_mode: false });
-                          // Optimista: refrescar lista
-                          decks.list().then(setItems);
-                          alert('Regeneración iniciada. Mira el progreso en "Ver / Editar".');
-                        } catch (err: any) {
-                          alert(err.response?.data?.detail || 'Error al regenerar');
-                        }
+                        setRegenModal({ deck: d, turbo: false });
                       }}
                       className="btn-secondary text-sm inline-flex items-center gap-1"
                       title="Re-corre el pipeline con el mismo brief"
@@ -120,6 +129,62 @@ export default function DashboardPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Modal: Regenerar con toggle de modo turbo */}
+      {regenModal.deck && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setRegenModal({ deck: null, turbo: false })}
+        >
+          <div
+            className="bg-white rounded-chamfer p-6 max-w-md w-full mx-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-pruno mb-2">Regenerar deck</h3>
+            <p className="text-sm text-stone-600 mb-4">
+              Vas a re-correr el pipeline completo para <strong>"{regenModal.deck.title}"</strong> usando el mismo brief y entrevista. Esto reemplazará el .pptx actual.
+            </p>
+
+            <label className="flex items-start gap-3 p-3 border border-stone-200 rounded-chamfer cursor-pointer hover:border-pruno mb-4">
+              <input
+                type="checkbox"
+                checked={regenModal.turbo}
+                onChange={(e) => setRegenModal({ ...regenModal, turbo: e.target.checked })}
+                className="w-4 h-4 accent-magenta mt-0.5"
+              />
+              <div>
+                <div className="font-semibold text-pruno text-sm">⚡ Modo Turbo</div>
+                <div className="text-xs text-stone-600 mt-0.5 leading-relaxed">
+                  Salta TODAS las revisiones — A6 Manager, A7 Partner Consulting, A8 Partner Tech y A9 Auditor Visual. Solo corren A2 Investigador, A3 Estructurador, A4 Contenido y la generación del .pptx.
+                  <br />
+                  ⚠️ El deck saldrá sin verificar branding hostil ni feedback de los Socios. Útil para draft rápido.
+                </div>
+              </div>
+            </label>
+
+            <div className="text-xs text-stone-500 mb-4">
+              Tiempo estimado: <strong>{regenModal.turbo ? "~2 min" : "~4-5 min"}</strong>
+              {regenModal.turbo && <span className="ml-2 text-naranja">· sin Manager · sin Partners · sin A9</span>}
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setRegenModal({ deck: null, turbo: false })}
+                className="btn-secondary text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRegenerate}
+                className="btn-primary text-sm inline-flex items-center gap-2"
+              >
+                <RotateCw className="w-4 h-4" />
+                {regenModal.turbo ? "Regenerar Turbo" : "Regenerar"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </AuthGuard>
