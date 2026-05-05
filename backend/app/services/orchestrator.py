@@ -278,10 +278,18 @@ def run_full_pipeline(deck_id: str, db: Session, manager_loop: bool = True) -> D
         return deck
 
     # NUEVO · Manager review loop (después de A4, antes del .pptx)
+    # Solo se ejecuta si manager_loop=True (default). Modo Turbo lo desactiva.
+    # Hard timeout: 5 min total para todo el loop. Si excede, abandonar y seguir.
+    import time as _time
+    loop_start = _time.time()
+    LOOP_TIMEOUT_SEC = 300
     if manager_loop:
-        for iteration in range(2):  # max 2 iterations
+        for iteration in range(1):  # max 1 iteration (manager + 1 fix). 2 iter tarda >15min en Render free tier
             if _check_cancelled(deck, db):
                 return deck
+            if _time.time() - loop_start > LOOP_TIMEOUT_SEC:
+                logger.warning(f"Manager loop superó {LOOP_TIMEOUT_SEC}s — abandonando para evitar atascarlo")
+                break
             try:
                 verdict = run_manager_review(deck, db, iteration)
             except Exception as e:
@@ -373,13 +381,17 @@ def run_fix_iteration(deck: Deck, db: Session, verdict: dict, iteration: int = 0
             f"slide_content actual: {json.dumps(slide_content, ensure_ascii=False)[:8000]}\n\n"
             f"Devuelve slide_content.json corregido (mismo formato {{slides:[...]}})."
         )
+        # max_tokens 8192 (reducido de 16384) — el fix retoca, no regenera entero.
+        # Streaming activado automáticamente porque >4096.
         output = claude.call_agent("content", user_message,
-                                   extra_system_context=extra_context, max_tokens=16384)
+                                   extra_system_context=extra_context, max_tokens=8192)
         new_content = _extract_json(output)
-        if new_content and "raw" not in new_content:
+        if new_content and "raw" not in new_content and "slides" in new_content:
             deck.slide_content = new_content
             flag_modified(deck, "slide_content")
             db.commit()
+        else:
+            logger.warning(f"A4 fix iter {iteration+1} no devolvió slides[] válido. Conservando slide_content anterior.")
 
 
 def run_reviews(deck_id: str, db: Session, parallel: bool = True) -> dict[str, str]:
