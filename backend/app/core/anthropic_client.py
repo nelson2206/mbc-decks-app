@@ -17,10 +17,11 @@ class ClaudeClient:
     """Wrapper sobre Anthropic SDK con timeout estricto y logging."""
 
     def __init__(self, api_key: Optional[str] = None):
-        # Timeout explícito: 90s para evitar que requests se cuelguen indefinidamente
+        # Timeout 10 min (Anthropic recomienda streaming para responses largos,
+        # pero el client-level timeout debe cubrir el peor caso).
         self.client = Anthropic(
             api_key=api_key or settings.anthropic_api_key,
-            timeout=httpx.Timeout(90.0, connect=10.0),
+            timeout=httpx.Timeout(600.0, connect=15.0),
             max_retries=2,
         )
         self.prompts_dir = settings.prompts_path
@@ -55,15 +56,36 @@ class ClaudeClient:
         logger.info(f"[{agent_name}] Iniciando llamada a {model} · prompt {len(user_message)} chars · system {len(system)} chars · max_tokens {max_tokens}")
         t0 = time.time()
         try:
-            response = self.client.messages.create(
-                model=model,
-                max_tokens=max_tokens,
-                system=system,
-                messages=[{"role": "user", "content": user_message}],
-            )
-            text = response.content[0].text
+            # Para responses largos (max_tokens > 4096) usar streaming.
+            # Sonnet 4.6 con 16k tokens puede tardar 60-120s y el response no-streaming
+            # se corta por timeout intermedio (proxy/load-balancer en algunos PaaS).
+            if max_tokens > 4096:
+                with self.client.messages.stream(
+                    model=model,
+                    max_tokens=max_tokens,
+                    system=system,
+                    messages=[{"role": "user", "content": user_message}],
+                ) as stream:
+                    text_parts = []
+                    for chunk in stream.text_stream:
+                        text_parts.append(chunk)
+                    text = "".join(text_parts)
+                    final = stream.get_final_message()
+                    in_tok = final.usage.input_tokens
+                    out_tok = final.usage.output_tokens
+            else:
+                response = self.client.messages.create(
+                    model=model,
+                    max_tokens=max_tokens,
+                    system=system,
+                    messages=[{"role": "user", "content": user_message}],
+                )
+                text = response.content[0].text
+                in_tok = response.usage.input_tokens
+                out_tok = response.usage.output_tokens
             elapsed = time.time() - t0
-            logger.info(f"[{agent_name}] OK · {elapsed:.1f}s · output {len(text)} chars · tokens in/out {response.usage.input_tokens}/{response.usage.output_tokens}")
+            mode = "stream" if max_tokens > 4096 else "sync"
+            logger.info(f"[{agent_name}] OK ({mode}) · {elapsed:.1f}s · output {len(text)} chars · tokens in/out {in_tok}/{out_tok}")
             return text
         except Exception as e:
             elapsed = time.time() - t0
