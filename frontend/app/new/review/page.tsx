@@ -21,13 +21,13 @@ type AgentStep = {
 };
 
 const PIPELINE_STEPS: AgentStep[] = [
-  { key: 'researching',  label: 'A2 · Investigador',     short: 'Research',    desc: 'Recopila data sectorial con fuentes citables',  icon: Search,     pct: 10, estSec: 70 },
-  { key: 'structuring',  label: 'A3 · Estructurador MBB', short: 'Structure',   desc: 'Define la storyline consultiva (Pirámide Minto · MECE)', icon: Layers,    pct: 25, estSec: 60 },
-  { key: 'writing',      label: 'A4 · Contenido',        short: 'Content',     desc: 'Redacta cada slide con knowledge base del tema', icon: FileText,   pct: 50, estSec: 90 },
-  { key: 'visual',       label: 'A5 · Visual + .pptx',   short: 'Visual',      desc: 'Mapea slides a layouts oficiales y genera el .pptx', icon: ImageIcon, pct: 65, estSec: 10 },
-  { key: 'audit',        label: 'A9 · Auditor visual',   short: 'Audit',       desc: 'Detecta branding hostil (competencia, otros clientes)', icon: Shield,    pct: 75, estSec: 20 },
-  { key: 'reviewing',    label: 'A6/A7/A8 · Revisores',  short: 'Reviewers',   desc: 'Manager + Socio Consultoría + Socio Tech (paralelo)', icon: UserCheck, pct: 90, estSec: 70 },
-  { key: 'ready',        label: 'Listo',                 short: 'Done',        desc: 'Deck listo para descargar', icon: CheckCircle, pct: 100, estSec: 0 },
+  { key: 'researching',  label: 'A2 · Investigador',       short: 'Research',  desc: 'Recopila data sectorial con fuentes citables',  icon: Search,     pct: 10, estSec: 70 },
+  { key: 'structuring',  label: 'A3 · Estructurador MBB',  short: 'Structure', desc: 'Define la storyline consultiva (Pirámide Minto · MECE)', icon: Layers,    pct: 25, estSec: 60 },
+  { key: 'writing',      label: 'A4 · Contenido + A6 Manager loop', short: 'Content', desc: 'Redacta cada slide y luego el Manager revisa. Si hay issues críticos, A4/A3 corrigen automático (max 2 iter)', icon: FileText, pct: 50, estSec: 150 },
+  { key: 'visual',       label: 'A5 · Visual + .pptx',     short: 'Visual',    desc: 'Mapea slides a layouts oficiales y genera el .pptx', icon: ImageIcon, pct: 70, estSec: 10 },
+  { key: 'audit',        label: 'A9 · Auditor visual',     short: 'Audit',     desc: 'Detecta branding hostil (competencia, otros clientes)', icon: Shield,    pct: 80, estSec: 20 },
+  { key: 'reviewing',    label: 'A7/A8 · Socios',          short: 'Partners',  desc: 'Socio Consultoría + Socio Tech revisan el .pptx final (paralelo)', icon: UserCheck, pct: 92, estSec: 70 },
+  { key: 'ready',        label: 'Listo',                   short: 'Done',      desc: 'Deck listo para descargar', icon: CheckCircle, pct: 100, estSec: 0 },
 ];
 
 function getStepIndex(status: string): number {
@@ -100,7 +100,7 @@ function ReviewInner() {
   const currentStepIdx = getStepIndex(deck.status);
   const pct = deck.progress_percentage || 0;
   const elapsed = startTime ? Math.floor((now - startTime)/1000) : 0;
-  const totalEstimate = fastMode ? 165 : 320;
+  const totalEstimate = fastMode ? 230 : 380;  // turbo: A2+A3+A4+pptx ~230s · full: ~380s con manager loop + partners + A9
   const remaining = Math.max(totalEstimate - elapsed, 0);
 
   return (
@@ -133,7 +133,7 @@ function ReviewInner() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-5">
               {PIPELINE_STEPS.slice(0, 6).map((s) => {
                 const Icon = s.icon;
-                const skipped = fastMode && s.key === 'reviewing';
+                const skipped = fastMode && (s.key === 'reviewing' || s.key === 'audit');
                 return (
                   <div key={s.key} className={`flex items-start gap-2 p-2 rounded-chamfer ${skipped ? 'opacity-40 line-through' : 'bg-ceramica/30'}`}>
                     <Icon className="w-4 h-4 text-pruno mt-0.5 flex-shrink-0" />
@@ -146,16 +146,22 @@ function ReviewInner() {
               })}
             </div>
 
-            <label className="flex items-center gap-2 mb-4 cursor-pointer p-3 rounded-chamfer border border-stone-200 hover:bg-stone-50">
-              <input type="checkbox" checked={fastMode} onChange={(e) => setFastMode(e.target.checked)} className="w-4 h-4 accent-magenta" />
+            <label className="flex items-start gap-3 mb-4 cursor-pointer p-3 rounded-chamfer border border-stone-200 hover:bg-stone-50">
+              <input type="checkbox" checked={fastMode} onChange={(e) => setFastMode(e.target.checked)} className="w-4 h-4 accent-magenta mt-0.5" />
               <div>
-                <span className="text-sm font-semibold text-pruno">Modo rápido</span>
-                <span className="text-xs text-stone-600 ml-2">— salta revisión Manager + Socios (-2.5 min · sin comentarios estratégicos)</span>
+                <span className="text-sm font-semibold text-pruno">⚡ Modo Turbo</span>
+                <span className="block text-xs text-stone-600 mt-1 leading-relaxed">
+                  Salta TODAS las revisiones — A6 Manager loop, A7 Partner Consulting, A8 Partner Tech y A9 Auditor visual.
+                  Solo corren A2, A3, A4 y la generación del .pptx. Termina en ~2 min en lugar de ~4-5 min.
+                </span>
+                <span className="block text-xs text-naranja mt-1">
+                  ⚠️ Sin verificación de branding hostil ni feedback estratégico. Solo para drafts rápidos.
+                </span>
               </div>
             </label>
 
             <button onClick={handleGenerate} disabled={retrying} className="btn-magenta inline-flex items-center gap-2">
-              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : `Iniciar generación${fastMode ? ' (rápido)' : ''}`}
+              <Sparkles className="w-4 h-4" /> {retrying ? 'Iniciando…' : `Iniciar generación${fastMode ? ' (Turbo)' : ''}`}
             </button>
           </div>
         )}
