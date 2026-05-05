@@ -207,13 +207,31 @@ def run_content(deck: Deck, db: Session) -> dict:
 
 
 def run_review(deck: Deck, db: Session, agent_name: str) -> str:
-    """A6/A7/A8 Reviewers."""
+    """A6/A7/A8 Reviewers (versión single-thread)."""
+    snapshot = _deck_snapshot(deck)
+    return _run_review_from_snapshot(snapshot, agent_name)
+
+
+def _deck_snapshot(deck: Deck) -> dict:
+    """Extrae los datos del deck a un dict plano para uso thread-safe."""
+    return {
+        "client_name": deck.client_name,
+        "industry": deck.industry,
+        "topic": deck.topic,
+        "deck_brief": deck.deck_brief,
+        "narrative_skeleton": deck.narrative_skeleton,
+        "slide_content": deck.slide_content,
+    }
+
+
+def _run_review_from_snapshot(snap: dict, agent_name: str) -> str:
+    """Ejecuta una review usando solo el dict plano (no toca SQLAlchemy)."""
     user_message = (
         f"Revisa el deck según tu rol ({agent_name}).\n\n"
-        f"Cliente: {deck.client_name} · Industria: {deck.industry} · Tema: {deck.topic}\n\n"
-        f"Brief: {json.dumps(deck.deck_brief, ensure_ascii=False)[:2000]}\n"
-        f"Esqueleto: {json.dumps(deck.narrative_skeleton, ensure_ascii=False)[:3000]}\n"
-        f"Contenido: {json.dumps(deck.slide_content, ensure_ascii=False)[:3000]}\n\n"
+        f"Cliente: {snap['client_name']} · Industria: {snap['industry']} · Tema: {snap['topic']}\n\n"
+        f"Brief: {json.dumps(snap['deck_brief'], ensure_ascii=False)[:2000]}\n"
+        f"Esqueleto: {json.dumps(snap['narrative_skeleton'], ensure_ascii=False)[:3000]}\n"
+        f"Contenido: {json.dumps(snap['slide_content'], ensure_ascii=False)[:3000]}\n\n"
         f"Devuelve markdown estructurado con issues."
     )
     return claude.call_agent(agent_name, user_message, max_tokens=4096)
@@ -266,11 +284,14 @@ def run_reviews(deck_id: str, db: Session, parallel: bool = True) -> dict[str, s
     _set_progress(deck, db, "reviewing", "A6/A7/A8 Revisores (paralelo)", 90)
     reviews = {}
     agents = ("manager", "partner_consulting", "partner_tech")
+    # Tomar un snapshot del deck ANTES de spawnar threads. Las propiedades
+    # SQLAlchemy no son thread-safe; cada thread debe trabajar con datos planos.
+    snap = _deck_snapshot(deck)
     try:
         if parallel:
             from concurrent.futures import ThreadPoolExecutor
             with ThreadPoolExecutor(max_workers=3) as executor:
-                future_to_agent = {executor.submit(run_review, deck, db, a): a for a in agents}
+                future_to_agent = {executor.submit(_run_review_from_snapshot, snap, a): a for a in agents}
                 for future in future_to_agent:
                     agent = future_to_agent[future]
                     try:
@@ -279,7 +300,7 @@ def run_reviews(deck_id: str, db: Session, parallel: bool = True) -> dict[str, s
                         reviews[agent] = f"⚠ Error en {agent}: {str(e)[:200]}"
         else:
             for agent in agents:
-                reviews[agent] = run_review(deck, db, agent)
+                reviews[agent] = _run_review_from_snapshot(snap, agent)
         deck.review_consolidated = "\n\n---\n\n".join(
             f"# {n}\n\n{md}" for n, md in reviews.items()
         )
