@@ -69,7 +69,28 @@ Para una propuesta comercial completa, el JSON debe tener mínimo 18-25 slides c
 - Índice
 - Separador 01 + 2-3 slides de contexto/reto
 - Separador 02 + 2-3 slides de propuesta de valor
-- Separador 03 + 2-3 slides de metodología/fases
+- Separador 03 + slide-FRAMEWORK + 1 slide por cada paso del framework (regla obligatoria, ver abajo)
+
+### REGLA OBLIGATORIA · Sección de metodología
+
+La sección 03 (metodología/fases) debe incluir SIEMPRE este patrón mínimo:
+
+1. **1 slide-FRAMEWORK** (`layout_kind: "methodology"` o `"key_idea"` con visual de fases) que muestre los 3-5 pasos/fases en una sola vista. Título answer-first como "Nuestro framework de 4 fases entrega resultados en 8 semanas".
+2. **1 slide DE CONTENIDO POR CADA paso del framework**, en el mismo orden, con `layout_kind: "methodology"` o `"context"`. Cada slide profundiza:
+   - Objetivo de la fase
+   - Actividades clave (3-5 bullets)
+   - Entregables específicos
+   - Duración
+
+Ejemplo (framework de 4 fases):
+- Slide N: FRAMEWORK — "4 fases · 8 semanas · resultados auditables" + visual con [Diagnóstico → Diseño → Implementación → Adopción]
+- Slide N+1: Fase 1 · Diagnóstico (objetivo, actividades, entregables, duración)
+- Slide N+2: Fase 2 · Diseño
+- Slide N+3: Fase 3 · Implementación
+- Slide N+4: Fase 4 · Adopción
+
+NUNCA entregues una propuesta con solo 1 slide de metodología. SIEMPRE: framework + N slides de detalle, donde N = 3 a 5.
+
 - Separador 04 + slide de equipo + plan de trabajo
 - Separador 05 + slide de inversión + condiciones
 - Cierre
