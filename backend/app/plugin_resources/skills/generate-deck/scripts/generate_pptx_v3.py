@@ -90,15 +90,25 @@ def _add_table(slide, headers: list, rows: list, left=Inches(0.5), top=Inches(2.
     n_rows = len(rows) + 1
     tbl_shape = slide.shapes.add_table(n_rows, n_cols, left, top, width, height)
     tbl = tbl_shape.table
+    # Distribuir alturas uniformemente: header 0.45in, data rows iguales
+    header_h = Inches(0.45)
+    data_h = Inches(max(0.35, (height.inches - 0.45) / len(rows)))
+    tbl.rows[0].height = header_h
+    for i in range(1, n_rows):
+        tbl.rows[i].height = data_h
     # Header row
     for j, h in enumerate(headers):
         cell = tbl.cell(0, j)
         cell.text = ""
         cell.fill.solid()
         cell.fill.fore_color.rgb = PRUNO
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+        cell.margin_left = Inches(0.12); cell.margin_right = Inches(0.08)
+        cell.margin_top = Inches(0.06); cell.margin_bottom = Inches(0.06)
         tf = cell.text_frame
-        p = tf.paragraphs[0]
-        r = p.add_run()
+        para = tf.paragraphs[0]
+        para.alignment = PP_ALIGN.LEFT
+        r = para.add_run()
         r.text = str(h)
         r.font.bold = True
         r.font.size = Pt(11)
@@ -110,111 +120,152 @@ def _add_table(slide, headers: list, rows: list, left=Inches(0.5), top=Inches(2.
                 break
             cell = tbl.cell(i, j)
             cell.fill.solid()
-            cell.fill.fore_color.rgb = BLANCO if i % 2 else CERAMICA
+            # Total row destacada (last row)
+            is_total = i == len(rows) and any(str(v).upper().strip() == "TOTAL" for v in row)
+            if is_total:
+                cell.fill.fore_color.rgb = PRUNO
+            else:
+                cell.fill.fore_color.rgb = BLANCO if i % 2 else CERAMICA
             cell.text = ""
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+            cell.margin_left = Inches(0.12); cell.margin_right = Inches(0.08)
+            cell.margin_top = Inches(0.04); cell.margin_bottom = Inches(0.04)
             tf = cell.text_frame
             tf.word_wrap = True
-            p = tf.paragraphs[0]
-            r = p.add_run()
+            para = tf.paragraphs[0]
+            para.alignment = PP_ALIGN.LEFT
+            r = para.add_run()
             r.text = str(val)
             r.font.size = Pt(10)
-            r.font.color.rgb = GRIS_TEXTO
+            r.font.color.rgb = BLANCO if is_total else GRIS_TEXTO
+            r.font.bold = is_total
 
 
 def _add_comparison(slide, left_label: str, right_label: str, left_items: list, right_items: list,
                     left=Inches(0.5), top=Inches(2.5), width=Inches(12.3), height=Inches(4.0)):
-    """Dos columnas lado a lado (Hoy vs Después / Riesgo vs Mitigación)."""
+    """Dos columnas lado a lado, items distribuidos uniformemente con bullets visibles."""
     half_w = Inches((width.inches - 0.3) / 2)
-    # Left column
-    lc = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, left, top, half_w, height)
-    lc.fill.solid()
-    lc.fill.fore_color.rgb = CERAMICA
-    lc.line.color.rgb = CERAMICA
-    tf_l = lc.text_frame
-    tf_l.margin_top = Inches(0.2); tf_l.margin_left = Inches(0.3); tf_l.margin_right = Inches(0.3)
-    tf_l.word_wrap = True
-    p_h = tf_l.paragraphs[0]
-    r_h = p_h.add_run(); r_h.text = left_label.upper(); r_h.font.bold = True; r_h.font.size = Pt(13); r_h.font.color.rgb = PRUNO
-    for item in left_items:
-        p = tf_l.add_paragraph()
-        r = p.add_run(); r.text = "  · " + str(item); r.font.size = Pt(10); r.font.color.rgb = GRIS_TEXTO
-    # Right column
+
+    def _build_col(box_left, label, items, fg_color, bg_color, bullet_color):
+        box = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, box_left, top, half_w, height)
+        box.fill.solid(); box.fill.fore_color.rgb = bg_color
+        box.line.color.rgb = bg_color
+        # Header del bloque (en una caja de texto separada arriba dentro del bloque)
+        hdr_h = Inches(0.7)
+        hdr = slide.shapes.add_textbox(box_left, top, half_w, hdr_h)
+        tf_h = hdr.text_frame
+        tf_h.margin_top = Inches(0.18); tf_h.margin_left = Inches(0.3); tf_h.margin_right = Inches(0.3)
+        ph = tf_h.paragraphs[0]; ph.alignment = PP_ALIGN.LEFT
+        rh = ph.add_run(); rh.text = label.upper()
+        rh.font.bold = True; rh.font.size = Pt(16); rh.font.color.rgb = fg_color
+        # Items distribuidos
+        items_top = Inches(top.inches + 0.85)
+        items_h = Inches(height.inches - 1.0)
+        items_box = slide.shapes.add_textbox(box_left, items_top, half_w, items_h)
+        tf_i = items_box.text_frame
+        tf_i.margin_top = Inches(0.1); tf_i.margin_left = Inches(0.4); tf_i.margin_right = Inches(0.3)
+        tf_i.word_wrap = True
+        for idx, item in enumerate(items):
+            para = tf_i.paragraphs[0] if idx == 0 else tf_i.add_paragraph()
+            para.space_after = Pt(10); para.space_before = Pt(0)
+            # Bullet point manual
+            r1 = para.add_run(); r1.text = "▪  "; r1.font.size = Pt(13); r1.font.color.rgb = bullet_color; r1.font.bold = True
+            r2 = para.add_run(); r2.text = str(item); r2.font.size = Pt(13); r2.font.color.rgb = fg_color
+
+    # Columna izquierda (cerámica fondo, pruno texto)
+    _build_col(left, left_label, left_items, PRUNO, CERAMICA, MAGENTA)
+    # Columna derecha (pruno fondo, blanco texto)
     right_left = Inches(left.inches + half_w.inches + 0.3)
-    rc = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, right_left, top, half_w, height)
-    rc.fill.solid()
-    rc.fill.fore_color.rgb = PRUNO
-    rc.line.color.rgb = PRUNO
-    tf_r = rc.text_frame
-    tf_r.margin_top = Inches(0.2); tf_r.margin_left = Inches(0.3); tf_r.margin_right = Inches(0.3)
-    tf_r.word_wrap = True
-    p_h2 = tf_r.paragraphs[0]
-    r_h2 = p_h2.add_run(); r_h2.text = right_label.upper(); r_h2.font.bold = True; r_h2.font.size = Pt(13); r_h2.font.color.rgb = BLANCO
-    for item in right_items:
-        p = tf_r.add_paragraph()
-        r = p.add_run(); r.text = "  · " + str(item); r.font.size = Pt(10); r.font.color.rgb = BLANCO
+    _build_col(right_left, right_label, right_items, BLANCO, PRUNO, MAGENTA)
 
 
-def _add_process_steps(slide, steps: list, left=Inches(0.5), top=Inches(3.0), width=Inches(12.3), height=Inches(2.5)):
-    """Cadena horizontal de N pasos con flechas."""
+def _add_process_steps(slide, steps: list, left=Inches(0.5), top=Inches(2.0), width=Inches(12.3), height=Inches(3.5)):
+    """Cadena horizontal de N pasos. Cajas más altas (3.5in) para no dejar slide vacío."""
     if not steps:
         return
     n = len(steps)
-    box_w = (width.inches - (n - 1) * 0.2) / n
+    box_w = (width.inches - (n - 1) * 0.15) / n
     for i, step in enumerate(steps):
-        x = Inches(left.inches + i * (box_w + 0.2))
+        x = Inches(left.inches + i * (box_w + 0.15))
         b = slide.shapes.add_shape(MSO_SHAPE.PENTAGON if i < n - 1 else MSO_SHAPE.ROUNDED_RECTANGLE,
                                     x, top, Inches(box_w), height)
         b.fill.solid()
         b.fill.fore_color.rgb = PRUNO if i % 2 == 0 else MAGENTA
         b.line.color.rgb = PRUNO
         tf = b.text_frame
-        tf.margin_top = Inches(0.2); tf.margin_left = Inches(0.2); tf.margin_right = Inches(0.2)
+        tf.margin_top = Inches(0.4); tf.margin_left = Inches(0.25); tf.margin_right = Inches(0.25)
+        tf.margin_bottom = Inches(0.3)
         tf.word_wrap = True
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
         # Step number
         p1 = tf.paragraphs[0]
         p1.alignment = PP_ALIGN.CENTER
+        p1.space_after = Pt(8)
         r1 = p1.add_run(); r1.text = f"FASE {step.get('step', i+1)}"
-        r1.font.size = Pt(9); r1.font.color.rgb = CERAMICA
+        r1.font.size = Pt(11); r1.font.color.rgb = CERAMICA; r1.font.bold = True
         # Label
         p2 = tf.add_paragraph()
         p2.alignment = PP_ALIGN.CENTER
+        p2.space_after = Pt(12)
         r2 = p2.add_run(); r2.text = str(step.get('label', ''))
-        r2.font.size = Pt(15); r2.font.bold = True; r2.font.color.rgb = BLANCO
+        r2.font.size = Pt(20); r2.font.bold = True; r2.font.color.rgb = BLANCO
         # Description
         if step.get('description'):
             p3 = tf.add_paragraph()
             p3.alignment = PP_ALIGN.CENTER
             r3 = p3.add_run(); r3.text = str(step['description'])
-            r3.font.size = Pt(9); r3.font.color.rgb = BLANCO
+            r3.font.size = Pt(11); r3.font.color.rgb = CERAMICA
 
 
 def _add_quote(slide, text: str, attribution: str = "",
-               left=Inches(1.5), top=Inches(2.5), width=Inches(10.3), height=Inches(2.5)):
-    """Cita destacada con borde lateral magenta."""
-    # Bar lateral magenta
-    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, top, Inches(0.1), height)
-    bar.fill.solid(); bar.fill.fore_color.rgb = MAGENTA; bar.line.fill.background()
-    # Text box al lado
-    tb = slide.shapes.add_textbox(Inches(left.inches + 0.3), top, Inches(width.inches - 0.3), height)
+               left=Inches(1.5), top=Inches(2.5), width=Inches(10.3), height=Inches(3.5),
+               on_dark: bool = False):
+    """Cita destacada centrada. on_dark=True = fondo oscuro (closing pruno), on_dark=False = fondo claro."""
+    text_color = BLANCO if on_dark else PRUNO
+    attr_color = CERAMICA if on_dark else MAGENTA
+    # Comilla decorativa grande arriba
+    decor = slide.shapes.add_textbox(left, Inches(top.inches - 0.3), Inches(1.2), Inches(1.0))
+    tfd = decor.text_frame
+    pd = tfd.paragraphs[0]; pd.alignment = PP_ALIGN.LEFT
+    rd = pd.add_run(); rd.text = '"'
+    rd.font.size = Pt(80); rd.font.bold = True; rd.font.color.rgb = MAGENTA
+    # Cita
+    tb = slide.shapes.add_textbox(left, top, width, height)
     tf = tb.text_frame; tf.word_wrap = True
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    tf.margin_left = Inches(0.5)
     p1 = tf.paragraphs[0]
-    r1 = p1.add_run(); r1.text = '"' + text + '"'
-    r1.font.size = Pt(20); r1.font.italic = True; r1.font.color.rgb = PRUNO
+    p1.alignment = PP_ALIGN.LEFT
+    p1.space_after = Pt(20)
+    r1 = p1.add_run(); r1.text = text
+    r1.font.size = Pt(28); r1.font.italic = True; r1.font.color.rgb = text_color
     if attribution:
         p2 = tf.add_paragraph()
+        p2.alignment = PP_ALIGN.LEFT
         r2 = p2.add_run(); r2.text = "— " + attribution
-        r2.font.size = Pt(11); r2.font.color.rgb = GRIS_TEXTO
+        r2.font.size = Pt(14); r2.font.color.rgb = attr_color; r2.font.bold = True
 
 
 def _add_footnote(slide, text: str):
-    """Footnote pequeño abajo del slide."""
+    """Footnote pequeño abajo del slide (fuente)."""
     if not text:
         return
-    tb = slide.shapes.add_textbox(Inches(0.5), Inches(7.0), Inches(12.3), Inches(0.3))
+    tb = slide.shapes.add_textbox(Inches(0.5), Inches(6.95), Inches(8.5), Inches(0.3))
     tf = tb.text_frame
     p = tf.paragraphs[0]
     r = p.add_run(); r.text = text
     r.font.size = Pt(8); r.font.italic = True; r.font.color.rgb = GRIS_TEXTO
+
+
+def _add_corporate_footer(slide, footer_text: str):
+    """Footer corporativo a la derecha: 'MINSAIT | <client_brief>'."""
+    if not footer_text:
+        return
+    tb = slide.shapes.add_textbox(Inches(8.0), Inches(7.2), Inches(5.0), Inches(0.25))
+    tf = tb.text_frame
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.RIGHT
+    r = p.add_run(); r.text = footer_text
+    r.font.size = Pt(8); r.font.color.rgb = PRUNO; r.font.bold = True
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -425,7 +476,10 @@ def generate_from_content(
         has_quote = bool(s.get("quote"))
         # Para slides con elementos visuales grandes → usar layout BLANCO sin placeholders
         # para que no choquen con los shapes que dibujamos.
-        if has_table or has_comparison or has_process or has_quote:
+        # Closing+quote: layout PRUNO full impact
+        if layout_kind == "closing" and has_quote:
+            layout_idx = 32  # VACIA_Pruno (fondo pruno)
+        elif has_table or has_comparison or has_process or has_quote:
             layout_idx = 31  # VACIA_Blanca
         elif has_metric:
             layout_idx = 19  # CONTENIDO - Texto - Blanco (con antetítulo)
@@ -444,17 +498,28 @@ def generate_from_content(
         # Title — siempre lo intentamos en el placeholder del template, pero si el
         # layout es VACIA_Blanca no tiene title, así que lo dibujamos manualmente.
         if layout_idx in (30, 31, 32):  # VACIA layouts
-            tb = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), Inches(12.3), Inches(0.5))
-            tf = tb.text_frame
-            if antetitle:
-                p_a = tf.paragraphs[0]
-                r_a = p_a.add_run(); r_a.text = antetitle.upper()
-                r_a.font.size = Pt(10); r_a.font.color.rgb = MAGENTA; r_a.font.bold = True
-                p_t = tf.add_paragraph()
-            else:
+            # Slide closing/quote: layout pruno full impact, todo el texto en blanco centrado
+            is_closing = layout_kind in ("closing",) and has_quote
+            if is_closing:
+                # Título Gracias arriba, en blanco, centrado
+                tb = slide.shapes.add_textbox(Inches(0.5), Inches(0.8), Inches(12.3), Inches(1.2))
+                tf = tb.text_frame
                 p_t = tf.paragraphs[0]
-            r_t = p_t.add_run(); r_t.text = title
-            r_t.font.size = Pt(22); r_t.font.bold = True; r_t.font.color.rgb = PRUNO
+                p_t.alignment = PP_ALIGN.CENTER
+                r_t = p_t.add_run(); r_t.text = title
+                r_t.font.size = Pt(48); r_t.font.bold = True; r_t.font.color.rgb = BLANCO
+            else:
+                tb = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), Inches(12.3), Inches(0.9))
+                tf = tb.text_frame
+                if antetitle:
+                    p_a = tf.paragraphs[0]
+                    r_a = p_a.add_run(); r_a.text = antetitle.upper()
+                    r_a.font.size = Pt(10); r_a.font.color.rgb = MAGENTA; r_a.font.bold = True
+                    p_t = tf.add_paragraph()
+                else:
+                    p_t = tf.paragraphs[0]
+                r_t = p_t.add_run(); r_t.text = title
+                r_t.font.size = Pt(22); r_t.font.bold = True; r_t.font.color.rgb = PRUNO
         else:
             if title and slide.shapes.title is not None:
                 slide.shapes.title.text = title
@@ -493,8 +558,9 @@ def generate_from_content(
                     r.font.size = Pt(11); r.font.color.rgb = GRIS_TEXTO
         elif has_quote:
             q = s["quote"]
+            on_dark = layout_kind == "closing"
             try:
-                _add_quote(slide, q.get("text", ""), q.get("attribution", ""))
+                _add_quote(slide, q.get("text", ""), q.get("attribution", ""), on_dark=on_dark)
             except Exception as ex:
                 # Fallback: textbox simple si la cita falla
                 tb = slide.shapes.add_textbox(Inches(1.0), Inches(2.5), Inches(11.3), Inches(3.0))
@@ -522,8 +588,9 @@ def generate_from_content(
                     tf = tb.text_frame; tf.word_wrap = True
                     for i, b in enumerate(bullets):
                         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                        r = p.add_run(); r.text = "· " + str(b)
-                        r.font.size = Pt(13); r.font.color.rgb = GRIS_TEXTO
+                        p.space_after = Pt(10); p.space_before = Pt(0)
+                        r1 = p.add_run(); r1.text = "▪  "; r1.font.size = Pt(14); r1.font.color.rgb = MAGENTA; r1.font.bold = True
+                        r2 = p.add_run(); r2.text = str(b); r2.font.size = Pt(14); r2.font.color.rgb = GRIS_TEXTO
                 # Metric a la derecha
                 m = s["key_metric"]
                 _add_key_metric(slide, m.get("value", ""), m.get("label", ""),
@@ -535,9 +602,16 @@ def generate_from_content(
                 elif subtitle:
                     _set_bullets_in_body(slide, [subtitle])
 
-        # Footnote (opcional)
+        # Footnote (opcional, fuente)
         if s.get("footnote"):
             _add_footnote(slide, s["footnote"])
+
+        # Footer corporativo "MINSAIT | <Cliente · Tema>" en slides de contenido
+        if layout_kind not in ("cover", "cover_partner", "closing", "section_divider", "index", "index_long"):
+            client = (deck_brief.get("client") or {}).get("name_commercial", "")
+            topic_label = (deck_brief.get("deck") or {}).get("title_working", "")
+            footer = f"MINSAIT  |  {client}" + (f" · {topic_label}" if topic_label else "")
+            _add_corporate_footer(slide, footer)
 
         # Speaker notes
         note = s.get("note", "")
