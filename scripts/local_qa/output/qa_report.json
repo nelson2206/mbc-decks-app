@@ -1,0 +1,94 @@
+{
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "total_time_s": 3.580731153488159
+  },
+  "results": [
+    {
+      "case_id": "01_belcorp_iagenai",
+      "passed": true,
+      "duration_s": 1.959,
+      "slides_generated": 18,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 3,
+        "comparison": 0,
+        "process_steps": 0,
+        "key_metric": 0,
+        "quote": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/01_belcorp_iagenai.pptx"
+    },
+    {
+      "case_id": "02_ferreyros_pmo",
+      "passed": true,
+      "duration_s": 0.56,
+      "slides_generated": 14,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 3,
+        "process_steps": 0,
+        "key_metric": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/02_ferreyros_pmo.pptx"
+    },
+    {
+      "case_id": "03_banca_capabilities",
+      "passed": true,
+      "duration_s": 0.235,
+      "slides_generated": 10,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 2,
+        "key_metric": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/03_banca_capabilities.pptx"
+    },
+    {
+      "case_id": "04_alpayana_assessment",
+      "passed": true,
+      "duration_s": 0.259,
+      "slides_generated": 11,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 4,
+        "key_metric": 0,
+        "process_steps": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/04_alpayana_assessment.pptx"
+    },
+    {
+      "case_id": "05_minsait_pm_training",
+      "passed": true,
+      "duration_s": 0.297,
+      "slides_generated": 10,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 1,
+        "process_steps": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/05_minsait_pm_training.pptx"
+    },
+    {
+      "case_id": "06_bbva_ciberseguridad",
+      "passed": true,
+      "duration_s": 0.271,
+      "slides_generated": 12,
+      "slides_with_zero_shapes": 0,
+      "issues": [],
+      "components_found": {
+        "table": 5,
+        "comparison": 0,
+        "key_metric": 0
+      },
+      "output_path": "/tmp/mbc-clone/scripts/local_qa/output/06_bbva_ciberseguridad.pptx"
+    }
+  ]
+}

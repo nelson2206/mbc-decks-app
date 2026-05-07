@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "case_id": "02_ferreyros_pmo",
+    "deck_type": "proposal_technical",
+    "client": "Ferreyros",
+    "industry": "industria_consumo_energia",
+    "topic": "pmo",
+    "expected_min_slides": 14,
+    "must_have_components": ["table", "process_steps", "key_metric"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover_partner","title":"PMO Avanzada · Project Acceleration Hub 2.0","subtitle":"Ferreyros · Junio 2026"},
+    {"order":2,"layout_kind":"objectives","antetitle":"OBJETIVOS","title":"Reducir desviación de cronograma 50% en 6 meses","bullets":["Implantar PMO Avanzada P3M3 nivel 4","Estandarizar gestión de portfolio de 80+ proyectos","Visibilidad ejecutiva en tiempo real","Curva de aprendizaje del equipo de PMOs"]},
+    {"order":3,"layout_kind":"section_divider","title":"01 · Diagnóstico"},
+    {"order":4,"antetitle":"01 · DIAGNÓSTICO","title":"Ferreyros opera 80+ proyectos con desviación promedio de 23%","bullets":["Portfolio actual: 80 proyectos activos en 5 unidades","SPI promedio: 0.83 (objetivo: 0.95+)","CPI promedio: 0.79 (objetivo: 0.95+)","Tiempo promedio para detectar desvío: 4 semanas"],"key_metric":{"value":"23%","label":"Desviación promedio cronograma","context":"vs benchmark sector minería 8%"},"footnote":"Fuente: análisis Minsait sobre data PMO Ferreyros 2025"},
+    {"order":5,"antetitle":"01 · DIAGNÓSTICO","title":"De PMO básica a PMO Avanzada P3M3 nivel 4","comparison":{"left_label":"PMO actual (nivel 2)","right_label":"PMO Avanzada (nivel 4)","left_items":["Reportes manuales mensuales","Métricas inconsistentes","Sin gobierno de portfolio","Capacidad reactiva"],"right_items":["Dashboards en tiempo real","KPIs estandarizados","Comité ejecutivo de portfolio","Capacidad predictiva con IA"]}},
+    {"order":6,"layout_kind":"section_divider","title":"02 · Propuesta de valor"},
+    {"order":7,"antetitle":"02 · PROPUESTA","title":"3 pilares para llevar a Ferreyros a PMO Avanzada","process_steps":[{"step":1,"label":"Gobierno","description":"Comité ejecutivo + cadencia"},{"step":2,"label":"Procesos","description":"Estándares por tipología"},{"step":3,"label":"Tecnología","description":"Dashboards + IA predictiva"}]},
+    {"order":8,"antetitle":"02 · PROPUESTA","title":"Resultados esperados al cierre del programa","table":{"headers":["KPI","Línea base","Target sem 24","Target sem 52"],"rows":[["SPI promedio","0.83","0.90","0.95+"],["CPI promedio","0.79","0.88","0.95+"],["Tiempo a detectar desvío","4 sem","2 sem","1 sem"],["Proyectos con risk register","45%","85%","100%"]]}},
+    {"order":9,"layout_kind":"section_divider","title":"03 · Metodología"},
+    {"order":10,"antetitle":"03 · METODOLOGÍA","title":"Framework de 5 fases en 24 semanas","process_steps":[{"step":1,"label":"Diagnóstico","description":"4 semanas"},{"step":2,"label":"Diseño","description":"6 semanas"},{"step":3,"label":"Implementación","description":"8 semanas"},{"step":4,"label":"Adopción","description":"4 semanas"},{"step":5,"label":"Sostenimiento","description":"2 semanas"}]},
+    {"order":11,"antetitle":"03 · METODOLOGÍA","title":"Fase 1 · Diagnóstico (semanas 1-4)","bullets":["Entrevistas con líderes de proyectos","Análisis de portfolio actual y tipologías","Audit de procesos PMO existentes","Baseline de KPIs y benchmarking"],"key_metric":{"value":"4 sem","label":"Duración fase 1","context":"Partner + Manager + 2 Cons"}},
+    {"order":12,"layout_kind":"section_divider","title":"04 · Equipo"},
+    {"order":13,"antetitle":"04 · EQUIPO","title":"Equipo de 8 profesionales dedicados","table":{"headers":["Rol","Perfil","Dedicación"],"rows":[["Partner","18a · Ex-Director PMO Antamina","20%"],["Manager Sr","12a · PMP + P3M3","60%"],["Manager Tech","10a · Power BI + Azure","60%"],["Cons Sr Procesos","8a · Lean PMO","100%"],["Cons Sr Datos","7a · Analytics","100%"],["Cons Jr x3","3-5a","100%"]]}},
+    {"order":14,"antetitle":"05 · INVERSIÓN","title":"USD 420,000 · 24 semanas","table":{"headers":["Fase","Honorarios","Hito de pago"],"rows":[["1 Diagnóstico","70,000","Sem 4"],["2 Diseño","100,000","Sem 10"],["3 Implementación","150,000","Sem 18"],["4 Adopción","75,000","Sem 22"],["5 Sostenimiento","25,000","Sem 24"],["TOTAL","420,000","—"]]}}
+  ]
+}

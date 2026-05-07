@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "case_id": "01_belcorp_iagenai",
+    "deck_type": "proposal_commercial",
+    "client": "Belcorp",
+    "industry": "consumo_masivo",
+    "topic": "ia_genai",
+    "expected_min_slides": 18,
+    "must_have_components": ["table", "comparison", "process_steps", "key_metric", "quote"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover_partner","title":"Formación en IA Generativa con ChatGPT y Gemini","subtitle":"Belcorp · Junio 2026"},
+    {"order":2,"layout_kind":"objectives","antetitle":"OBJETIVOS","title":"De curiosidad sobre IA al uso productivo en 3 meses","bullets":["Documentar entendimiento de la realidad digital de Belcorp","Describir arquitectura pedagógica del programa","Plan de trabajo y cronograma","Inversión y estructura comercial"]},
+    {"order":3,"layout_kind":"index_long","title":"Índice","bullets":["01 · Contexto","02 · Solución técnica","03 · Metodología","04 · Equipo","05 · Inversión"]},
+    {"order":4,"layout_kind":"section_divider","title":"01 · Contexto"},
+    {"order":5,"antetitle":"01 · CONTEXTO","title":"60% de empresas perdieron deals por falta de IA en 2024","bullets":["Gap se aceleró 5x desde 2022","Sectores afectados: belleza, retail, alimentos","Empresas con plan formal cierran 2.3x más deals"],"key_metric":{"value":"60%","label":"Empresas con gap","context":"vs 12% en 2022"},"footnote":"Fuente: Anthropic State of GenAI 2024"},
+    {"order":6,"antetitle":"01 · CONTEXTO","title":"Belcorp tiene 800K consultoras y 600 colaboradores digitales","comparison":{"left_label":"Hoy","right_label":"Después","left_items":["Uso espontáneo","Sin guidelines","Riesgo privacidad"],"right_items":["Stack auditado","Playbook por rol","Compliance integrado"]},"footnote":"Fuente: Reporte Sostenibilidad Belcorp 2024"},
+    {"order":7,"layout_kind":"section_divider","title":"02 · Solución técnica"},
+    {"order":8,"antetitle":"02 · SOLUCIÓN","title":"Programa 3 meses · 800 colaboradores · 30+ casos validados","bullets":["Currículo modular en 4 niveles","ChatGPT Enterprise + Gemini for Workspace","Casos por unidad: Marketing, E-com, Datos","Certificación interna + reporte mensual"],"key_metric":{"value":"800","label":"Capacitados","context":"30+ casos · 4 niveles"}},
+    {"order":9,"antetitle":"02 · SOLUCIÓN","title":"Stack técnico recomendado","table":{"headers":["Herramienta","Caso","Costo/mes","Owner"],"rows":[["ChatGPT Ent","Generación contenido","$60/usr","Marketing"],["Gemini Workspace","Productividad docs","$30/usr","IT"],["Claude Anthropic","Razonamiento, code","$50/usr","Datos"],["Azure AI Studio","Gobierno","Variable","IT"]]}},
+    {"order":10,"layout_kind":"section_divider","title":"03 · Metodología"},
+    {"order":11,"antetitle":"03 · METODOLOGÍA","title":"Framework de 4 fases en 12 semanas","process_steps":[{"step":1,"label":"Diagnóstico","description":"Mapa capacidades · 2 sem"},{"step":2,"label":"Diseño","description":"Programa formativo · 3 sem"},{"step":3,"label":"Pilotos","description":"3 waves · 5 sem"},{"step":4,"label":"Adopción","description":"Playbook · 2 sem"}]},
+    {"order":12,"antetitle":"03 · METODOLOGÍA","title":"Fase 1 · Diagnóstico (sem 1-2)","bullets":["Entrevistas con líderes de Marketing, E-com, Datos","Encuesta baseline a 200 colaboradores","Mapa de casos priorizados con ROI","30+ casos validados con sponsor"],"key_metric":{"value":"2 sem","label":"Duración","context":"Manager + 2 Cons"}},
+    {"order":13,"antetitle":"03 · METODOLOGÍA","title":"Fase 2 · Diseño (sem 3-5)","bullets":["Currículo de 4 niveles","Material adaptado por unidad","LMS configurado","Validación con sponsor"],"key_metric":{"value":"3 sem","label":"Duración","context":"Manager + 1 Cons + Pedagogía"}},
+    {"order":14,"layout_kind":"section_divider","title":"04 · Equipo"},
+    {"order":15,"antetitle":"04 · EQUIPO","title":"7 profesionales dedicados","table":{"headers":["Rol","Perfil","Dedicación","Responsabilidad"],"rows":[["Partner","20a · Ex-MD GCP","20%","Sponsor + QA"],["Manager Sr","12a · GenAI","60%","Lidera programa"],["Manager Pedag","10a · L&D + IA","60%","Diseño curricular"],["Consultor Datos","8a · MLOps","100%","Casos técnicos"],["Consultor CX","7a · Marketing IA","100%","Casos comerciales"],["Consultor Jr x2","3-5a · Trainer","100%","Facilitación"]]}},
+    {"order":16,"layout_kind":"section_divider","title":"05 · Inversión"},
+    {"order":17,"antetitle":"05 · INVERSIÓN","title":"USD 285,000 · facturación por hito","table":{"headers":["Concepto","Honorarios","%","Hito"],"rows":[["Fase 1 Diagnóstico","45,000","16%","Sem 2"],["Fase 2 Diseño","75,000","26%","Sem 5"],["Fase 3 Pilotos","125,000","44%","Sem 10"],["Fase 4 Adopción","40,000","14%","Sem 12"],["TOTAL","285,000","100%","—"]]},"footnote":"Vigencia 30 días · IGV no incluido · Pago a 30 días del hito"},
+    {"order":18,"layout_kind":"closing","title":"Gracias","quote":{"text":"La IA no reemplaza a tus equipos — los amplifica","attribution":"Minsait Business Consulting"}}
+  ]
+}

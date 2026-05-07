@@ -1,0 +1,24 @@
+{
+  "_meta": {
+    "case_id": "04_alpayana_assessment",
+    "deck_type": "proposal_assessment",
+    "client": "Alpayana",
+    "industry": "industria_consumo_energia",
+    "topic": "data_analytics",
+    "expected_min_slides": 11,
+    "must_have_components": ["table", "key_metric", "process_steps"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover_partner","title":"Assessment de Madurez del Dato","subtitle":"Alpayana · Junio 2026"},
+    {"order":2,"layout_kind":"objectives","antetitle":"OBJETIVOS","title":"Diagnóstico de la madurez actual y roadmap a nivel 4","bullets":["Diagnosticar nivel actual P3M3 / DAMA-DMBOK","Identificar gaps prioritarios por dimensión","Proponer roadmap de 18 meses","Cuantificar inversión y ROI esperado"]},
+    {"order":3,"antetitle":"BASELINE","title":"Alpayana hoy está en nivel 2 promedio según DAMA-DMBOK","key_metric":{"value":"2.1","label":"Nivel madurez promedio","context":"Escala 1-5 · Target: 4.0 en 18 meses"}},
+    {"order":4,"antetitle":"DIAGNÓSTICO","title":"Madurez por dimensión DAMA-DMBOK","table":{"headers":["Dimensión","Actual","Target 18m","Gap"],"rows":[["Data Governance","1.5","4.0","ALTO"],["Data Quality","2.0","4.0","ALTO"],["Data Architecture","2.5","4.0","MEDIO"],["Master Data","2.0","3.5","MEDIO"],["Data Security","3.0","4.0","BAJO"],["Metadata Mgmt","1.5","3.5","ALTO"]]}},
+    {"order":5,"antetitle":"GAPS","title":"3 gaps críticos a cerrar primero","comparison":{"left_label":"Hoy","right_label":"Target 18m","left_items":["Sin data ownership formal","Calidad medida ad-hoc","Sin business glossary","Reportes en silos por área"],"right_items":["Data owners por dominio","SLA de calidad por tabla","Glossary corporativo vivo","Capa semántica unificada"]}},
+    {"order":6,"antetitle":"METODOLOGÍA","title":"Roadmap de 18 meses en 4 olas","process_steps":[{"step":1,"label":"Quick wins","description":"Q1 · 3 meses"},{"step":2,"label":"Foundations","description":"Q2-Q3 · 6 meses"},{"step":3,"label":"Scale","description":"Q4-Q5 · 6 meses"},{"step":4,"label":"Optimize","description":"Q6 · 3 meses"}]},
+    {"order":7,"antetitle":"ROADMAP","title":"Iniciativas por ola con ROI estimado","table":{"headers":["Iniciativa","Ola","Inversión","ROI esperado"],"rows":[["Data Governance Council","Q1","$45K","Baseline gobierno"],["Business Glossary","Q1","$30K","Reduce ambigüedad 60%"],["Quality Framework","Q2","$80K","Reduce errores 40%"],["Master Data Hub","Q3","$220K","Single source of truth"],["Capa semántica","Q4","$150K","Self-service 3x"]]}},
+    {"order":8,"antetitle":"INVERSIÓN","title":"Inversión total estimada del roadmap","key_metric":{"value":"$525K","label":"Inversión total 18 meses","context":"ROI proyectado payback 24 meses"}},
+    {"order":9,"antetitle":"EQUIPO","title":"Equipo del assessment (10 semanas)","table":{"headers":["Rol","Dedicación","Output"],"rows":[["Partner","20%","QA + sponsor"],["Manager DAMA","60%","Lidera assessment"],["Cons Sr Quality","100%","Diagnóstico Q1-Q4"],["Cons Sr Governance","100%","Diagnóstico G1-G3"]]}},
+    {"order":10,"antetitle":"INVERSIÓN ASSESSMENT","title":"USD 95,000 · 10 semanas","table":{"headers":["Concepto","Honorarios","Hito"],"rows":[["Discovery + entrevistas","25,000","Sem 3"],["Diagnóstico DAMA","45,000","Sem 7"],["Roadmap + business case","25,000","Sem 10"],["TOTAL","95,000","—"]]},"footnote":"Vigencia 30 días · IGV no incluido"},
+    {"order":11,"layout_kind":"closing","title":"Empecemos","quote":{"text":"No se puede gestionar lo que no se mide. Empezar bien es ganar 6 meses.","attribution":"Minsait Data Practice"}}
+  ]
+}

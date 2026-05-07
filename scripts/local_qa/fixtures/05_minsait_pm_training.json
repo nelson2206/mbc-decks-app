@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "case_id": "05_minsait_pm_training",
+    "deck_type": "training_internal",
+    "client": "Minsait Interno",
+    "industry": "all",
+    "topic": "pmo",
+    "expected_min_slides": 10,
+    "must_have_components": ["table", "process_steps"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover","title":"Formación Project Management","subtitle":"CoE de PMO/OTA · Marzo 2026"},
+    {"order":2,"layout_kind":"index_long","title":"Índice","bullets":["01 · Marco conceptual","02 · Roles y responsabilidades","03 · Ciclo de vida","04 · Herramientas Minsait","05 · Casos prácticos"]},
+    {"order":3,"layout_kind":"section_divider","title":"01 · Marco conceptual"},
+    {"order":4,"antetitle":"01 · MARCO","title":"Proyecto, Programa y Portfolio · 3 niveles de gestión","comparison":{"left_label":"Proyecto","right_label":"Portfolio","left_items":["Esfuerzo temporal","Resultado único","Equipo dedicado","Plazos definidos"],"right_items":["Conjunto de proyectos","Alineación estratégica","Comité ejecutivo","Visión multi-anual"]}},
+    {"order":5,"antetitle":"01 · MARCO","title":"Triángulo de gestión: alcance, tiempo, costo","process_steps":[{"step":1,"label":"Alcance","description":"Qué entregamos"},{"step":2,"label":"Tiempo","description":"Cuándo lo entregamos"},{"step":3,"label":"Costo","description":"Cuánto cuesta"}]},
+    {"order":6,"layout_kind":"section_divider","title":"02 · Roles"},
+    {"order":7,"antetitle":"02 · ROLES","title":"Matriz RACI de roles del proyecto","table":{"headers":["Actividad","PM","PO","BO","PMO","Equipo"],"rows":[["Definir objetivos","R","A","C","I","I"],["Planificar","R","C","C","A","I"],["Ejecutar","A","I","I","C","R"],["Reportar","R","I","C","A","I"],["Cerrar","R","A","C","I","I"]]}},
+    {"order":8,"antetitle":"02 · ROLES","title":"Project Manager · funciones principales","bullets":["Definir objetivos y alcance del proyecto","Desarrollar plan: cronograma, presupuesto, recursos","Coordinar al equipo y stakeholders","Gestionar riesgos y change requests","Reportar avance al sponsor"]},
+    {"order":9,"antetitle":"03 · CICLO","title":"Metodologías: Waterfall vs Agile","comparison":{"left_label":"Waterfall","right_label":"Agile","left_items":["Fases secuenciales","Plan completo al inicio","Cambios formales","Releases finales"],"right_items":["Sprints iterativos","Plan adaptativo","Cambios continuos","Releases incrementales"]}},
+    {"order":10,"layout_kind":"closing","title":"Gracias","quote":{"text":"Un proyecto exitoso no es el que entrega a tiempo: es el que entrega valor sostenible.","attribution":"Minsait CoE PMO"}}
+  ]
+}

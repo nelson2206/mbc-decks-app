@@ -1,0 +1,23 @@
+{
+  "_meta": {
+    "case_id": "03_banca_capabilities",
+    "deck_type": "proposal_capabilities",
+    "client": "Banca peruana",
+    "industry": "servicios_financieros",
+    "topic": "data_analytics",
+    "expected_min_slides": 10,
+    "must_have_components": ["table", "key_metric"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover","title":"Capabilities · Data Analytics","subtitle":"Minsait Business Consulting · Banca y Finanzas"},
+    {"order":2,"antetitle":"NUESTRA HUELLA","title":"Minsait Data Analytics ha entregado 240+ proyectos en banca LATAM","key_metric":{"value":"240+","label":"Proyectos entregados","context":"15 países · 8 años de track record"},"bullets":["Modelos de scoring crediticio para 12 bancos top","Detección de fraude en tiempo real (4 implementaciones)","Forecasting de portfolio para tesorería","Customer 360° y next best action"]},
+    {"order":3,"antetitle":"PRÁCTICAS","title":"4 prácticas verticales en Data & Analytics","table":{"headers":["Práctica","Casos","Tech stack","Lead Partner"],"rows":[["Risk Analytics","85","Snowflake + Python + R","María Vásquez"],["Customer Intelligence","60","Databricks + Tableau","Carlos Reátegui"],["Operational Analytics","55","Azure + Power BI","Luis Camacho"],["Compliance & RegTech","40","SAS + Snowflake","Diana Ramos"]]}},
+    {"order":4,"antetitle":"CASOS","title":"Casos de éxito recientes en banca peruana","table":{"headers":["Cliente","Proyecto","Duración","Resultado"],"rows":[["BCP","Modelo de scoring SME","6 meses","Default rate −22%"],["Interbank","Forecasting tesorería","4 meses","Precisión +18%"],["BBVA","Customer 360 retail","8 meses","Cross-sell +12%"],["Scotia","Fraud detection","5 meses","Falsos positivos −40%"]]}},
+    {"order":5,"antetitle":"DIFERENCIADORES","title":"Por qué elegir Minsait en Data Analytics","comparison":{"left_label":"Otros","right_label":"Minsait","left_items":["Equipos genéricos","Sin track record sectorial","Stack técnico limitado","Sin compliance regulatorio"],"right_items":["Equipos verticalizados banca","240+ casos en sector","Multi-stack (Snowflake, Databricks, Azure, AWS)","Práctica RegTech dedicada"]}},
+    {"order":6,"antetitle":"METODOLOGÍA","title":"Cómo abordamos cada caso","process_steps":[{"step":1,"label":"Discovery","description":"2-4 semanas"},{"step":2,"label":"PoC","description":"4-6 semanas"},{"step":3,"label":"Scale","description":"3-6 meses"}]},
+    {"order":7,"antetitle":"EQUIPO","title":"500+ profesionales certificados","key_metric":{"value":"500+","label":"Profesionales en práctica","context":"35% certificados en Snowflake/Databricks/Azure"}},
+    {"order":8,"antetitle":"PARTNERSHIPS","title":"Alianzas con líderes tecnológicos","bullets":["Snowflake Premier Partner desde 2021","Databricks Elite Consulting Partner","Azure Gold Partner Data & AI","AWS Advanced Consulting Partner","Tableau Authorized Training Center"]},
+    {"order":9,"antetitle":"VALOR DIFERENCIAL","title":"Modelo Minsait Banking Data Stack","bullets":["Acelerador propietario: Banking Data Stack","Componentes pre-construidos para risk, fraud, customer","Reduce time-to-value 40% vs implementación greenfield","Compatible con Snowflake, Databricks y Azure Synapse"]},
+    {"order":10,"layout_kind":"closing","title":"Hablemos","quote":{"text":"Data sin estrategia es solo storage. Estrategia sin data es solo opinión.","attribution":"Minsait Business Consulting · Práctica Data Analytics"}}
+  ]
+}
