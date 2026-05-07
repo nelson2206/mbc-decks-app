@@ -344,14 +344,23 @@ def _normalize_bullets(body) -> list[str]:
 
 
 def _normalize_slide(s: dict, order_hint: int = 0) -> dict:
-    """Normaliza un slide al formato canónico que entiende este generador."""
+    """Normaliza un slide al formato canónico que entiende este generador.
+    Conserva TODOS los campos ricos: key_metric, table, comparison, process_steps, quote, footnote.
+    """
     bullets_raw = s.get("bullets") or s.get("body") or s.get("content") or []
     return {
         "order": s.get("order") or s.get("slide_order") or order_hint,
         "layout_kind": s.get("layout_kind") or s.get("layout") or s.get("kind") or "context",
-        "title": s.get("title") or s.get("antetitle") or "",
+        "antetitle": s.get("antetitle") or "",
+        "title": s.get("title") or "",
         "subtitle": s.get("subtitle") or "",
         "bullets": _normalize_bullets(bullets_raw),
+        "key_metric": s.get("key_metric"),
+        "table": s.get("table"),
+        "comparison": s.get("comparison"),
+        "process_steps": s.get("process_steps"),
+        "quote": s.get("quote"),
+        "footnote": s.get("footnote") or "",
         "note": s.get("note") or s.get("speaker_notes") or "",
     }
 
