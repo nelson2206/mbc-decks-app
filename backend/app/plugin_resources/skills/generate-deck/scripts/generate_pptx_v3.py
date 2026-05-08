@@ -550,8 +550,19 @@ def generate_from_content(
         # Layout de contenido según componentes presentes
         if has_table:
             tbl = s["table"]
+            n_rows_data = len(tbl.get("rows", []))
+            if n_rows_data <= 4:
+                tbl_h = Inches(3.5)
+            elif n_rows_data <= 6:
+                tbl_h = Inches(4.5)
+            else:
+                tbl_h = Inches(5.2)
             _add_table(slide, tbl.get("headers", []), tbl.get("rows", []),
-                       top=Inches(1.4), height=Inches(4.5))
+                       top=Inches(1.5), height=tbl_h)
+            # Accent magenta solo en layouts VACIA (sin title placeholder propio)
+            if layout_idx in (30, 31, 32):
+                bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.5), Inches(1.05), Inches(2.0), Inches(0.05))
+                bar.fill.solid(); bar.fill.fore_color.rgb = MAGENTA; bar.line.fill.background()
             # Si también hay bullets cortos, ponerlos abajo
             if bullets and len(bullets) <= 3:
                 tb = slide.shapes.add_textbox(Inches(0.5), Inches(6.1), Inches(12.3), Inches(0.8))
@@ -569,16 +580,23 @@ def generate_from_content(
                             c.get("right_items", []),
                             top=Inches(1.4), height=Inches(4.8))
         elif has_process:
-            _add_process_steps(slide, s["process_steps"],
-                               top=Inches(1.5), height=Inches(2.0))
-            # Bullets opcionales debajo
+            n_steps = len(s.get("process_steps", []))
+            # Si hay bullets, proceso compacto arriba (height 2.0in) y bullets abajo
             if bullets:
-                tb = slide.shapes.add_textbox(Inches(0.5), Inches(4.0), Inches(12.3), Inches(2.5))
+                _add_process_steps(slide, s["process_steps"],
+                                    top=Inches(1.5), height=Inches(2.5))
+                tb = slide.shapes.add_textbox(Inches(0.5), Inches(4.4), Inches(12.3), Inches(2.4))
                 tf = tb.text_frame; tf.word_wrap = True
+                tf.vertical_anchor = MSO_ANCHOR.TOP
                 for i, b in enumerate(bullets[:5]):
                     p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                    r = p.add_run(); r.text = "· " + str(b)
-                    r.font.size = Pt(11); r.font.color.rgb = GRIS_TEXTO
+                    p.space_after = Pt(12)
+                    r1 = p.add_run(); r1.text = "▪  "; r1.font.size = Pt(13); r1.font.color.rgb = MAGENTA; r1.font.bold = True
+                    r2 = p.add_run(); r2.text = str(b); r2.font.size = Pt(13); r2.font.color.rgb = GRIS_TEXTO
+            else:
+                # Sin bullets · proceso ocupa más altura para no dejar slide vacío
+                _add_process_steps(slide, s["process_steps"],
+                                    top=Inches(1.8), height=Inches(4.5))
         elif has_quote:
             q = s["quote"]
             on_dark = layout_kind == "closing"
@@ -605,21 +623,23 @@ def generate_from_content(
         else:
             # Standard: bullets + key_metric a la derecha si existe
             if has_metric:
-                # Bullets a la izquierda (mitad ancho)
+                # Bullets a la izquierda · vertical center (no top-aligned)
                 if bullets:
-                    tb = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(7.0), Inches(5.0))
+                    tb = slide.shapes.add_textbox(Inches(0.5), Inches(1.6), Inches(7.0), Inches(4.8))
                     tf = tb.text_frame; tf.word_wrap = True
+                    tf.vertical_anchor = MSO_ANCHOR.MIDDLE  # ← centrado vertical para llenar altura
                     for i, b in enumerate(bullets):
                         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                        p.space_after = Pt(10); p.space_before = Pt(0)
+                        p.space_after = Pt(14); p.space_before = Pt(0)
                         r1 = p.add_run(); r1.text = "▪  "; r1.font.size = Pt(14); r1.font.color.rgb = MAGENTA; r1.font.bold = True
                         r2 = p.add_run(); r2.text = str(b); r2.font.size = Pt(14); r2.font.color.rgb = GRIS_TEXTO
-                # Metric a la derecha
+                # Metric a la derecha · ajustar tamaño y posición
                 m = s["key_metric"]
                 _add_key_metric(slide, m.get("value", ""), m.get("label", ""),
-                                m.get("context", ""))
+                                m.get("context", ""), left=Inches(8.0), top=Inches(1.8),
+                                width=Inches(4.5), height=Inches(3.5))
             else:
-                # Solo bullets en el placeholder estándar
+                # Solo bullets en el placeholder estándar (vertical center si pocos)
                 if bullets:
                     _set_bullets_in_body(slide, bullets)
                 elif subtitle:

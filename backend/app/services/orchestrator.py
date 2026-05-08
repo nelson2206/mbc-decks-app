@@ -226,13 +226,17 @@ def _deck_snapshot(deck: Deck) -> dict:
 
 def _run_review_from_snapshot(snap: dict, agent_name: str) -> str:
     """Ejecuta una review usando solo el dict plano (no toca SQLAlchemy)."""
+    visual_metrics_str = ""
+    if snap.get("visual_metrics"):
+        visual_metrics_str = f"\nVisual metrics por slide:\n{json.dumps(snap['visual_metrics'], ensure_ascii=False)[:3000]}\n"
     user_message = (
         f"Revisa el deck según tu rol ({agent_name}).\n\n"
         f"Cliente: {snap['client_name']} · Industria: {snap['industry']} · Tema: {snap['topic']}\n\n"
         f"Brief: {json.dumps(snap['deck_brief'], ensure_ascii=False)[:2000]}\n"
         f"Esqueleto: {json.dumps(snap['narrative_skeleton'], ensure_ascii=False)[:3000]}\n"
-        f"Contenido: {json.dumps(snap['slide_content'], ensure_ascii=False)[:3000]}\n\n"
-        f"Devuelve markdown estructurado con issues."
+        f"Contenido: {json.dumps(snap['slide_content'], ensure_ascii=False)[:4000]}\n"
+        f"{visual_metrics_str}\n"
+        f"Devuelve párrafo + JSON según tu prompt."
     )
     return claude.call_agent(agent_name, user_message, max_tokens=4096)
 
@@ -344,12 +348,60 @@ def run_full_pipeline(deck_id: str, db: Session, manager_loop: bool = True) -> D
     return deck
 
 
+def _compute_visual_metrics(slide_content: dict) -> list:
+    """Calcula métricas visuales por slide para que el Manager las evalúe.
+    No requiere renderizar a PPTX — usa el slide_content como proxy."""
+    metrics = []
+    slides = slide_content.get("slides", []) if isinstance(slide_content, dict) else []
+    for s in slides:
+        bullets = s.get("bullets") or []
+        text_chars = sum(len(str(b)) for b in bullets) + len(s.get("title","")) + len(s.get("subtitle",""))
+        components = []
+        if s.get("title"): components.append("title")
+        if bullets: components.append(f"{len(bullets)} bullets")
+        if s.get("key_metric"): components.append("key_metric")
+        if s.get("table"):
+            t = s["table"]; components.append(f"table {len(t.get('rows',[]))}r")
+        if s.get("comparison"):
+            c = s["comparison"]; components.append(f"comp {len(c.get('left_items',[]))}+{len(c.get('right_items',[]))}")
+        if s.get("process_steps"): components.append(f"process {len(s['process_steps'])}")
+        if s.get("quote"): components.append("quote")
+        if s.get("footnote"): components.append("footnote")
+        # Estimación de densidad (0-1) basada en componentes y bullets
+        density = 0.0
+        if bullets: density += min(0.4, len(bullets) * 0.08)
+        if s.get("key_metric"): density += 0.20
+        if s.get("table"):
+            density += 0.30 + min(0.15, len(s["table"].get("rows",[])) * 0.04)
+        if s.get("comparison"):
+            density += 0.30 + min(0.15, (len(s["comparison"].get("left_items",[])) + len(s["comparison"].get("right_items",[]))) * 0.02)
+        if s.get("process_steps"): density += 0.25
+        if s.get("quote"): density += 0.30
+        density = min(1.0, density)
+        metrics.append({
+            "slide_order": s.get("order", 0),
+            "layout_kind": s.get("layout_kind", "context"),
+            "estimated_text_chars": text_chars,
+            "has_table": bool(s.get("table")),
+            "has_metric": bool(s.get("key_metric")),
+            "has_comparison": bool(s.get("comparison")),
+            "has_process": bool(s.get("process_steps")),
+            "has_quote": bool(s.get("quote")),
+            "has_footnote": bool(s.get("footnote")),
+            "occupied_height_estimate": round(density, 2),
+            "components_summary": " + ".join(components) if components else "(empty)",
+        })
+    return metrics
+
+
 def run_manager_review(deck: Deck, db: Session, iteration: int = 0) -> dict:
     """A6 Manager review · corre DESPUÉS de A4 antes del .pptx.
     Devuelve un dict con verdict + listas de issues que el orquestador parsea.
     """
     _set_progress(deck, db, "writing", f"A6 Manager review (iter {iteration+1})", 60)
     snap = _deck_snapshot(deck)
+    # Inyectar visual_metrics al snapshot que recibe el manager
+    snap["visual_metrics"] = _compute_visual_metrics(snap.get("slide_content") or {})
     md = _run_review_from_snapshot(snap, "manager")
     # Guardar el markdown completo en review_consolidated para que el usuario lo vea
     deck.review_consolidated = (deck.review_consolidated or "") + (
