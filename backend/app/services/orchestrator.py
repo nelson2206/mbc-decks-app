@@ -277,32 +277,67 @@ def run_full_pipeline(deck_id: str, db: Session, manager_loop: bool = True) -> D
         _set_error(deck, db, "A4 Contenido", e)
         return deck
 
-    # NUEVO · Manager review loop (después de A4, antes del .pptx)
-    # Solo se ejecuta si manager_loop=True (default). Modo Turbo lo desactiva.
-    # Hard timeout: 5 min total para todo el loop. Si excede, abandonar y seguir.
+    # NUEVO · PM ↔ Manager loop (después de A4, antes del .pptx)
+    # Manager McKinsey (Sonnet) revisa. PM (Haiku) planea fixes. Agentes ejecutan.
+    # Loop hasta: aprobación, escalado a usuario, max 2 iter o timeout 5min.
     import time as _time
     loop_start = _time.time()
     LOOP_TIMEOUT_SEC = 300
+    MAX_ITER = 2
     if manager_loop:
-        for iteration in range(1):  # max 1 iteration (manager + 1 fix). 2 iter tarda >15min en Render free tier
+        history = []  # log de fixes intentados para no repetirlos
+        for iteration in range(MAX_ITER):
             if _check_cancelled(deck, db):
                 return deck
             if _time.time() - loop_start > LOOP_TIMEOUT_SEC:
-                logger.warning(f"Manager loop superó {LOOP_TIMEOUT_SEC}s — abandonando para evitar atascarlo")
+                logger.warning(f"PM loop superó {LOOP_TIMEOUT_SEC}s — abandonando")
                 break
+
+            # === Step 1: Manager McKinsey revisa ===
             try:
                 verdict = run_manager_review(deck, db, iteration)
             except Exception as e:
-                logger.warning(f"Manager review falló (iter {iteration}): {e}. Continuando sin fix.")
+                logger.warning(f"Manager review iter {iteration+1} falló: {e}")
                 break
-            if verdict.get("verdict") == "approved" or not (verdict.get("critical_issues") or verdict.get("high_issues")):
-                logger.info(f"Manager APROBÓ el deck en iteración {iteration}")
+
+            if verdict.get("approved") or verdict.get("verdict") == "approved":
+                logger.info(f"✅ Manager APROBÓ el deck en iteración {iteration+1}")
                 break
-            # Hay issues. Aplicar fixes
+
+            blockers = verdict.get("blockers") or verdict.get("critical_issues") or []
+            high = verdict.get("high_issues") or []
+            if not blockers and not high:
+                logger.info(f"Manager sin blockers ni high — saliendo del loop")
+                break
+
+            # === Step 2: PM planea fixes ===
             try:
-                run_fix_iteration(deck, db, verdict, iteration)
+                plan = run_pm_planning(deck, db, verdict, history, iteration)
             except Exception as e:
-                logger.warning(f"Fix iteration falló: {e}. Continuando con lo que hay.")
+                logger.warning(f"PM planning iter {iteration+1} falló: {e}")
+                break
+
+            if plan.get("escalate_to_user"):
+                deck.last_error = f"PM escaló a usuario: {plan.get('skip_reason','sin convergencia')}"
+                db.commit()
+                logger.info(f"⚠ PM escaló a usuario: {plan.get('skip_reason')}")
+                break
+
+            fix_plan = plan.get("fix_plan", [])
+            if not fix_plan:
+                logger.info(f"PM sin plan de fix — saliendo (skip_reason: {plan.get('skip_reason','')})")
+                break
+
+            # === Step 3: Ejecutar el plan paso a paso ===
+            try:
+                executed = run_pm_execute_plan(deck, db, fix_plan, iteration)
+                history.append({
+                    "iteration": iteration + 1,
+                    "verdict_summary": plan.get("verdict_summary", ""),
+                    "steps_executed": executed,
+                })
+            except Exception as e:
+                logger.warning(f"Ejecución de plan iter {iteration+1} falló: {e}")
                 break
 
     _set_progress(deck, db, "visual", "A5 Visual", 65)
@@ -328,6 +363,116 @@ def run_manager_review(deck: Deck, db: Session, iteration: int = 0) -> dict:
         # Si no logró parsear, asumir approved para no atascarse
         return {"verdict": "approved", "critical_issues": [], "high_issues": []}
     return verdict
+
+
+def run_pm_planning(deck: Deck, db: Session, verdict: dict, history: list, iteration: int) -> dict:
+    """A0 Project Manager (Haiku) · planea qué fixes aplicar dado el veredicto del Manager.
+    Devuelve un plan estructurado: lista de steps con agente + scope + instrucción.
+    """
+    _set_progress(deck, db, "writing", f"A0 PM planeando fixes (iter {iteration+1})", 62)
+    sc_preview = json.dumps(deck.slide_content or {}, ensure_ascii=False)[:4000]
+    user_message = (
+        f"Estás en la iteración {iteration+1} de {2}.\n\n"
+        f"VEREDICTO DEL MANAGER McKINSEY:\n{json.dumps(verdict, ensure_ascii=False)[:5000]}\n\n"
+        f"ESTADO ACTUAL DEL DECK (preview):\n{sc_preview}\n\n"
+        f"HISTORIA DE ITERACIONES PREVIAS:\n{json.dumps(history, ensure_ascii=False)[:2000] if history else '(ninguna · primera iteración)'}\n\n"
+        f"Devuelve TU PLAN como JSON estricto según las reglas de tu prompt. Solo JSON, sin markdown."
+    )
+    output = claude.call_agent("project_manager", user_message, max_tokens=2048)
+    plan = _extract_json(output)
+    if not plan or "fix_plan" not in plan:
+        return {"iteration": iteration + 1, "verdict_summary": "PM no logró planear", "fix_plan": [],
+                "skip_reason": "PM output no parseable", "escalate_to_user": True, "estimated_duration_min": 0}
+    return plan
+
+
+def run_pm_execute_plan(deck: Deck, db: Session, fix_plan: list, iteration: int) -> list:
+    """Ejecuta cada step del plan en orden. Solo permite agentes A2/A3/A4 por seguridad."""
+    executed = []
+    for step in fix_plan[:5]:  # cap defensivo a 5 steps
+        agent = (step.get("agent") or "").upper()
+        instruction = step.get("instruction", "")
+        scope = step.get("scope", "")
+        if agent not in ("A2", "A3", "A4"):
+            executed.append({"step": step.get("step"), "agent": agent, "status": "skipped",
+                             "reason": f"agent {agent} no auto-fixable"})
+            continue
+        try:
+            if agent == "A2":
+                _pm_fix_research(deck, db, instruction, scope)
+            elif agent == "A3":
+                _pm_fix_structure(deck, db, instruction, scope)
+            elif agent == "A4":
+                _pm_fix_content(deck, db, instruction, scope, step.get("blocks_slides", []))
+            executed.append({"step": step.get("step"), "agent": agent, "status": "ok"})
+        except Exception as e:
+            executed.append({"step": step.get("step"), "agent": agent, "status": "error", "reason": str(e)[:200]})
+    return executed
+
+
+def _pm_fix_research(deck: Deck, db: Session, instruction: str, scope: str):
+    """A2 con instrucción específica del PM (no rerun completo)."""
+    user_message = (
+        f"FIX REQUEST DEL PM (no rerun completo, solo lo pedido):\n\n"
+        f"Scope: {scope}\n"
+        f"Instrucción: {instruction}\n\n"
+        f"Cliente: {deck.client_name} · Tema: {deck.topic}\n"
+        f"Devuelve markdown corto con la respuesta puntual."
+    )
+    output = claude.call_agent("researcher", user_message, max_tokens=2048)
+    # Append al research_brief para que A4 luego lo use
+    rb = deck.research_brief or {}
+    fixes = rb.get("pm_fixes", [])
+    fixes.append({"scope": scope, "instruction": instruction, "answer": output})
+    rb["pm_fixes"] = fixes
+    deck.research_brief = rb
+    flag_modified(deck, "research_brief")
+    db.commit()
+
+
+def _pm_fix_structure(deck: Deck, db: Session, instruction: str, scope: str):
+    """A3 reescribe SOLO la parte indicada del narrative_skeleton."""
+    skeleton = deck.narrative_skeleton or {}
+    user_message = (
+        f"FIX REQUEST DEL PM (cambio puntual, no rearmar todo):\n\n"
+        f"Scope: {scope}\n"
+        f"Instrucción: {instruction}\n\n"
+        f"Esqueleto actual: {json.dumps(skeleton, ensure_ascii=False)[:5000]}\n\n"
+        f"Devuelve narrative_skeleton.json corregido."
+    )
+    output = claude.call_agent("structurer", user_message, max_tokens=4096)
+    new_skel = _extract_json(output)
+    if new_skel and "raw" not in new_skel:
+        deck.narrative_skeleton = new_skel
+        flag_modified(deck, "narrative_skeleton")
+        db.commit()
+
+
+def _pm_fix_content(deck: Deck, db: Session, instruction: str, scope: str, blocks_slides: list):
+    """A4 reescribe SOLO los slides indicados (no todo el deck) — ahorra tokens."""
+    sc = deck.slide_content or {}
+    slides = sc.get("slides", []) if isinstance(sc, dict) else []
+    target_slides = [s for s in slides if s.get("order") in blocks_slides] if blocks_slides else slides
+    user_message = (
+        f"FIX REQUEST DEL PM (cambio puntual SOLO en slides {blocks_slides}):\n\n"
+        f"Scope: {scope}\n"
+        f"Instrucción: {instruction}\n\n"
+        f"Slides afectados (estado actual): {json.dumps(target_slides, ensure_ascii=False)[:5000]}\n\n"
+        f"Devuelve JSON: {{\"slides\": [...]}} con SOLO esos slides corregidos. "
+        f"El orquestador hace merge con el resto."
+    )
+    output = claude.call_agent("content", user_message, max_tokens=8192)
+    fixed = _extract_json(output)
+    if not fixed or "slides" not in fixed:
+        return
+    fixed_by_order = {s.get("order"): s for s in fixed["slides"]}
+    new_slides = []
+    for s in slides:
+        new_slides.append(fixed_by_order.get(s.get("order"), s))
+    sc["slides"] = new_slides
+    deck.slide_content = sc
+    flag_modified(deck, "slide_content")
+    db.commit()
 
 
 def run_fix_iteration(deck: Deck, db: Session, verdict: dict, iteration: int = 0):

@@ -50,7 +50,7 @@ class ClaudeClient:
             system = f"{system}\n\n## Contexto adicional\n\n{extra_system_context}"
 
         if model is None:
-            fast_agents = {"visual", "manager", "orchestrator", "visual_auditor"}
+            fast_agents = {"visual", "project_manager", "orchestrator", "visual_auditor"}
             model = settings.anthropic_model_fast if agent_name in fast_agents else settings.anthropic_model_main
 
         logger.info(f"[{agent_name}] Iniciando llamada a {model} · prompt {len(user_message)} chars · system {len(system)} chars · max_tokens {max_tokens}")
