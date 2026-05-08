@@ -79,6 +79,22 @@ Eres exigente. La barrera es: ¿este deck haría que el sponsor del cliente firm
 - `fix_route` ∈ {A2, A3, A4, A5, ASK-USER}
 - `specific_action`: instrucción concreta y verificable, ≤30 palabras
 
+## Tracking de iteraciones (importante)
+
+Si recibes el deck en una iteración >1, antes de generar issues nuevos:
+
+1. Lee la `iteration_history` del context que te pasa el orquestador
+2. Si una sugerencia (`severity: low`) que mencionaste antes NO se atendió, NO la marques como blocker — déjala como `severity: low` con flag `"deferred": true` en el item
+3. Si un blocker que mencionaste antes sigue sin atender, eleva la severidad y agrega `"persistence": N` indicando cuántas iteraciones lleva sin resolverse
+4. Después de 2 iteraciones con persistence ≥ 2, marca `"verdict": "escalate_user"` con razón clara — el PM debe escalar al humano
+
+Ejemplo de issue persistente:
+```json
+{"slide": 5, "issue_type": "missing_source", "severity": "critical",
+ "fix_route": "A2", "specific_action": "...",
+ "persistence": 2, "previous_attempts": ["A2 buscó pero no encontró fuente verificable"]}
+```
+
 ## Tu output completo
 
 Antes del JSON, escribe **un párrafo de 4-6 líneas** estilo Manager McKinsey explicando tu veredicto al PM. Estás hablando con un PM senior, no con C-level — sé directo, técnico, prescriptivo.

@@ -465,11 +465,31 @@ def _pm_fix_content(deck: Deck, db: Session, instruction: str, scope: str, block
     fixed = _extract_json(output)
     if not fixed or "slides" not in fixed:
         return
-    fixed_by_order = {s.get("order"): s for s in fixed["slides"]}
-    new_slides = []
-    for s in slides:
-        new_slides.append(fixed_by_order.get(s.get("order"), s))
-    sc["slides"] = new_slides
+    # FIX 1: detectar inserciones · si A4 devuelve más slides que blocks_slides
+    # pedidos, asumimos que insertó nuevos. Re-numerar todos los orders del deck.
+    fixed_slides = fixed["slides"]
+    fixed_orders = {s.get("order") for s in fixed_slides}
+    target_orders = set(blocks_slides) if blocks_slides else {s.get("order") for s in slides}
+    new_orders_count = len(fixed_orders - target_orders)
+
+    if new_orders_count > 0:
+        # Modo MERGE+RENUMBER: A4 insertó slides nuevos
+        # 1) Tomar los slides no afectados (los que A4 NO devolvió en sus targets)
+        kept = [s for s in slides if s.get("order") not in target_orders]
+        # 2) Combinar con todos los fixed (incluye targets actualizados + insertados)
+        combined = kept + list(fixed_slides)
+        # 3) Sort por order original
+        combined.sort(key=lambda s: s.get("order", 0))
+        # 4) Renumerar 1..N consecutivos
+        for i, s in enumerate(combined, start=1):
+            s["order"] = i
+        sc["slides"] = combined
+        logger.info(f"A4 insertó {new_orders_count} slide(s) · deck renumerado · total={len(combined)}")
+    else:
+        # Modo replace simple
+        fixed_by_order = {s.get("order"): s for s in fixed_slides}
+        sc["slides"] = [fixed_by_order.get(s.get("order"), s) for s in slides]
+
     deck.slide_content = sc
     flag_modified(deck, "slide_content")
     db.commit()
