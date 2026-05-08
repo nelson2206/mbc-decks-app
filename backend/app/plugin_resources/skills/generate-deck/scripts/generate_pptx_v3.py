@@ -521,8 +521,31 @@ def generate_from_content(
                 r_t = p_t.add_run(); r_t.text = title
                 r_t.font.size = Pt(22); r_t.font.bold = True; r_t.font.color.rgb = PRUNO
         else:
+            # Cover: ajustar font size si título es largo para evitar overlap.
+            is_cover = layout_kind in ("cover", "cover_partner")
             if title and slide.shapes.title is not None:
                 slide.shapes.title.text = title
+                # Si título largo, reducir font del placeholder
+                if is_cover and len(title) > 50:
+                    for para in slide.shapes.title.text_frame.paragraphs:
+                        for run in para.runs:
+                            # Reducir 30% para que quepa en 2 líneas
+                            try:
+                                if run.font.size and run.font.size.pt > 0:
+                                    run.font.size = Pt(int(run.font.size.pt * 0.7))
+                                else:
+                                    run.font.size = Pt(28)
+                            except Exception:
+                                run.font.size = Pt(28)
+                # Subtitle en placeholder secundario si existe
+                if subtitle and is_cover:
+                    for sh in slide.placeholders:
+                        if sh.placeholder_format.idx != 0 and sh.has_text_frame and not sh.text_frame.text.strip():
+                            try:
+                                sh.text_frame.text = subtitle
+                                break
+                            except Exception:
+                                pass
 
         # Layout de contenido según componentes presentes
         if has_table:
