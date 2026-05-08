@@ -258,14 +258,16 @@ def _add_footnote(slide, text: str):
 
 
 def _add_corporate_footer(slide, footer_text: str):
-    """Footer corporativo a la derecha: 'MINSAIT | <client_brief>'."""
+    """Footer corporativo formato brandbook: 'MINSAIT • Cliente · dd/mm/aaaa'.
+    Posición: abajo izquierda · 8pt · ForFuture Sans · Pruno o Cerámica según fondo."""
     if not footer_text:
         return
-    tb = slide.shapes.add_textbox(Inches(8.0), Inches(7.2), Inches(5.0), Inches(0.25))
+    tb = slide.shapes.add_textbox(Inches(0.5), Inches(7.2), Inches(8.0), Inches(0.25))
     tf = tb.text_frame
-    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.RIGHT
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.LEFT
     r = p.add_run(); r.text = footer_text
-    r.font.size = Pt(8); r.font.color.rgb = PRUNO; r.font.bold = True
+    r.font.size = Pt(8); r.font.color.rgb = PRUNO
+    r.font.name = "ForFuture Sans"  # del brandbook
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -653,13 +655,37 @@ def generate_from_content(
         if layout_kind not in ("cover", "cover_partner", "closing", "section_divider", "index", "index_long"):
             client = (deck_brief.get("client") or {}).get("name_commercial", "")
             topic_label = (deck_brief.get("deck") or {}).get("title_working", "")
-            footer = f"MINSAIT  |  {client}" + (f" · {topic_label}" if topic_label else "")
+            from datetime import datetime
+            fecha = datetime.now().strftime("%m.%Y")
+            # Formato brandbook: MINSAIT • Cliente · Tema · MM.YYYY
+            parts = [f"MINSAIT • {client}"]
+            if topic_label: parts.append(topic_label)
+            parts.append(fecha)
+            footer = " · ".join(parts)
             _add_corporate_footer(slide, footer)
 
         # Speaker notes
         note = s.get("note", "")
         if note:
             slide.notes_slide.notes_text_frame.text = note
+
+    # POST-PROCESS · forzar fuente ForFuture Sans en TODOS los runs (regla brandbook)
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if not shape.has_text_frame:
+                continue
+            for para in shape.text_frame.paragraphs:
+                for run in para.runs:
+                    if not run.font.name:  # respetar si ya está set
+                        run.font.name = "ForFuture Sans"
+            # También iterar tablas
+            if shape.has_table:
+                for row in shape.table.rows:
+                    for cell in row.cells:
+                        for para in cell.text_frame.paragraphs:
+                            for run in para.runs:
+                                if not run.font.name:
+                                    run.font.name = "ForFuture Sans"
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     if Path(output_path).exists():

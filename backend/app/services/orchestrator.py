@@ -229,6 +229,9 @@ def _run_review_from_snapshot(snap: dict, agent_name: str) -> str:
     visual_metrics_str = ""
     if snap.get("visual_metrics"):
         visual_metrics_str = f"\nVisual metrics por slide:\n{json.dumps(snap['visual_metrics'], ensure_ascii=False)[:3000]}\n"
+    extra_ctx = ""
+    if snap.get("brand_reference") and agent_name == "manager":
+        extra_ctx = f"## BRAND REFERENCE Minsait (ground truth para tu evaluación)\n\n{snap['brand_reference']}\n"
     user_message = (
         f"Revisa el deck según tu rol ({agent_name}).\n\n"
         f"Cliente: {snap['client_name']} · Industria: {snap['industry']} · Tema: {snap['topic']}\n\n"
@@ -238,7 +241,7 @@ def _run_review_from_snapshot(snap: dict, agent_name: str) -> str:
         f"{visual_metrics_str}\n"
         f"Devuelve párrafo + JSON según tu prompt."
     )
-    return claude.call_agent(agent_name, user_message, max_tokens=4096)
+    return claude.call_agent(agent_name, user_message, max_tokens=4096, extra_system_context=extra_ctx)
 
 
 def run_full_pipeline(deck_id: str, db: Session, manager_loop: bool = True) -> Deck:
@@ -394,14 +397,26 @@ def _compute_visual_metrics(slide_content: dict) -> list:
     return metrics
 
 
+def _load_brand_reference() -> str:
+    """Carga el brand_reference.md (manual de marca Minsait + patrones corpus)."""
+    try:
+        from pathlib import Path
+        path = settings.plugin_path / "skills" / "generate-deck" / "brand" / "brand_reference.md"
+        if path.exists():
+            return path.read_text(encoding="utf-8")[:8000]  # cap a 8000 chars para no inflar prompt
+    except Exception as e:
+        logger.warning(f"No se pudo cargar brand_reference: {e}")
+    return ""
+
+
 def run_manager_review(deck: Deck, db: Session, iteration: int = 0) -> dict:
-    """A6 Manager review · corre DESPUÉS de A4 antes del .pptx.
-    Devuelve un dict con verdict + listas de issues que el orquestador parsea.
+    """A6 Manager McKinsey · revisa contenido + brand compliance + visual.
+    Carga brand_reference.md como contexto adicional para evaluar adherencia a marca.
     """
-    _set_progress(deck, db, "writing", f"A6 Manager review (iter {iteration+1})", 60)
+    _set_progress(deck, db, "writing", f"A6 Manager McKinsey (iter {iteration+1})", 60)
     snap = _deck_snapshot(deck)
-    # Inyectar visual_metrics al snapshot que recibe el manager
     snap["visual_metrics"] = _compute_visual_metrics(snap.get("slide_content") or {})
+    snap["brand_reference"] = _load_brand_reference()
     md = _run_review_from_snapshot(snap, "manager")
     # Guardar el markdown completo en review_consolidated para que el usuario lo vea
     deck.review_consolidated = (deck.review_consolidated or "") + (
