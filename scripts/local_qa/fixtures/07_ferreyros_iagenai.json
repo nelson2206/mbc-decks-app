@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "case_id": "07_ferreyros_iagenai",
+    "deck_type": "proposal_commercial",
+    "client": "Ferreyros",
+    "industry": "industria_consumo_energia",
+    "topic": "ia_genai",
+    "expected_min_slides": 16,
+    "must_have_components": ["table", "comparison", "process_steps", "key_metric", "quote"]
+  },
+  "slides": [
+    {"order":1,"layout_kind":"cover_partner","title":"Programa de IA Generativa para Operaciones de Maquinaria Pesada","subtitle":"Ferreyros · Junio 2026"},
+    {"order":2,"layout_kind":"objectives","antetitle":"OBJETIVOS","title":"Llevar a Ferreyros de pilotos aislados de IA a uso productivo en 6 meses","bullets":["Diagnosticar el estado actual de adopción IA en Ferreyros","Diseñar un programa formativo y stack técnico","Definir casos de uso priorizados con ROI","Presentar plan de trabajo, equipo e inversión"]},
+    {"order":3,"layout_kind":"index_long","title":"Índice","bullets":["01 · Contexto","02 · Solución técnica","03 · Metodología","04 · Equipo","05 · Inversión"]},
+    {"order":4,"layout_kind":"section_divider","title":"01 · Contexto"},
+    {"order":5,"antetitle":"01 · CONTEXTO","title":"La industria minera pierde grandes oportunidades sin GenAI","bullets":["Muchas empresas se están quedando rezagadas","Hay una gran oportunidad de eficiencia operacional","Ferreyros tiene equipos jóvenes muy abiertos al cambio","La capacitación es la barrera principal de adopción"],"key_metric":{"value":"30%","label":"Eficiencia ganada","context":"según estudios"},"footnote":"Fuente: estudios del sector"},
+    {"order":6,"antetitle":"01 · CONTEXTO","title":"Ferreyros tiene 3000 colaboradores y operación 24/7 con SAP","comparison":{"left_label":"Hoy","right_label":"Después","left_items":["Datos de SAP analizados manualmente","Reportes de operación en 1 semana"],"right_items":["Análisis automatizado con IA","Reportes en tiempo real"]},"footnote":"Fuente: entrevistas Minsait con Ferreyros · 2026"},
+    {"order":7,"layout_kind":"section_divider","title":"02 · Solución técnica"},
+    {"order":8,"antetitle":"02 · SOLUCIÓN","title":"Programa de IA robusto e innovador para Ferreyros","bullets":["Stack tecnológico de vanguardia","Casos de uso a la medida","Capacitación world-class","Acompañamiento integral"],"key_metric":{"value":"500","label":"Colaboradores capacitados","context":"6 meses"}},
+    {"order":9,"antetitle":"02 · SOLUCIÓN","title":"Stack técnico recomendado","table":{"headers":["Herramienta","Caso de uso","Costo/mes","Owner"],"rows":[["ChatGPT Enterprise","Reportes y análisis","$60/usuario","Operaciones"],["Microsoft Copilot","Productividad oficina","$30/usuario","IT"],["Claude API","Automatización SAP","$50/usuario","Datos"],["Azure AI Studio","Gobierno IA","Variable","IT"]]}},
+    {"order":10,"layout_kind":"section_divider","title":"03 · Metodología"},
+    {"order":11,"antetitle":"03 · METODOLOGÍA","title":"Framework de 4 fases","process_steps":[{"step":1,"label":"Diagnóstico","description":"4 sem"},{"step":2,"label":"Diseño","description":"6 sem"},{"step":3,"label":"Pilotos","description":"10 sem"},{"step":4,"label":"Adopción","description":"4 sem"}]},
+    {"order":12,"antetitle":"03 · METODOLOGÍA","title":"Fase 1 · Diagnóstico (sem 1-4)","bullets":["Entrevistas con líderes operativos y de IT","Mapeo de procesos actuales","Identificar casos de uso con potencial","Definir baseline de productividad"],"key_metric":{"value":"4 sem","label":"Duración","context":"Manager + 2 Cons"}},
+    {"order":13,"layout_kind":"section_divider","title":"04 · Equipo"},
+    {"order":14,"antetitle":"04 · EQUIPO","title":"Equipo Minsait dedicado","table":{"headers":["Rol","Perfil","Dedicación"],"rows":[["Partner","Senior con experiencia","20%"],["Manager Sr","GenAI + Industria","60%"],["Consultor Sr","MLOps","100%"],["Consultores","Trainers","100%"]]}},
+    {"order":15,"layout_kind":"section_divider","title":"05 · Inversión"},
+    {"order":16,"antetitle":"05 · INVERSIÓN","title":"Inversión total","table":{"headers":["Concepto","Monto","Hito"],"rows":[["Fase 1","$80,000","Sem 4"],["Fase 2","$120,000","Sem 10"],["Fase 3","$200,000","Sem 20"],["Fase 4","$60,000","Sem 24"],["TOTAL","$460,000","—"]]},"footnote":"Vigencia 30 días"},
+    {"order":17,"layout_kind":"closing","title":"Gracias","quote":{"text":"La IA es el futuro","attribution":"Minsait"}}
+  ]
+}

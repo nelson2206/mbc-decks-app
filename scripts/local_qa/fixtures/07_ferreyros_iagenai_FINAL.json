@@ -1,0 +1,258 @@
+{
+  "_meta": {
+    "case_id": "07_ferreyros_iagenai_FINAL",
+    "deck_type": "proposal_commercial",
+    "client": "Ferreyros",
+    "industry": "industria_consumo_energia",
+    "topic": "ia_genai",
+    "iterations_run": 3,
+    "issues_resolved": 8,
+    "approved_by_manager": true
+  },
+  "slides": [
+    {
+      "order": 1,
+      "layout_kind": "cover_partner",
+      "title": "Programa de IA Generativa para Operaciones de Maquinaria Pesada",
+      "subtitle": "Ferreyros · Junio 2026"
+    },
+    {
+      "order": 2,
+      "layout_kind": "objectives",
+      "antetitle": "OBJETIVOS DEL DOCUMENTO",
+      "title": "Llevar a Ferreyros de pilotos aislados de IA al uso productivo en 6 meses",
+      "bullets": [
+        "Documentar el estado actual de adopción de IA en Ferreyros y los gaps prioritarios",
+        "Describir la arquitectura técnica y pedagógica del programa de capacitación",
+        "Presentar el plan de trabajo con cronograma, hitos, equipo y entregables",
+        "Transparentar la inversión total y estructura comercial del programa"
+      ]
+    },
+    {
+      "order": 3,
+      "layout_kind": "index_long",
+      "title": "Índice",
+      "bullets": [
+        "01 · Contexto y entendimiento",
+        "02 · Solución técnica propuesta",
+        "03 · Metodología y plan de trabajo",
+        "04 · Equipo Minsait dedicado",
+        "05 · Inversión y condiciones"
+      ]
+    },
+    {
+      "order": 4,
+      "layout_kind": "section_divider",
+      "title": "01 · Contexto y entendimiento"
+    },
+    {
+      "order": 5,
+      "antetitle": "01 · CONTEXTO",
+      "title": "62% de mineras LATAM citan la capacitación como su barrera #1 para escalar GenAI",
+      "bullets": [
+        "Solo 11% de las mineras LATAM han escalado IA a producción · 42% siguen en piloto",
+        "Antamina y Yanacocha reportaron 18-25% de reducción en downtime al adoptar IA en mantto",
+        "Tiempo invertido por colaborador en reportes manuales SAP: 8h/semana en promedio",
+        "Ferreyros: equipo joven (edad promedio 35a) abierto al cambio · primera dealer Cat LATAM en piloto IA"
+      ],
+      "key_metric": {
+        "value": "62%",
+        "label": "Mineras citan capacitación como barrera #1",
+        "context": "vs 23% que cita la tecnología"
+      },
+      "footnote": "Fuente: McKinsey · State of AI in Mining 2024 · n=412 mineras globales"
+    },
+    {
+      "order": 6,
+      "antetitle": "01 · CONTEXTO",
+      "title": "Ferreyros tiene 3,000 colaboradores y operación 24/7 con SAP — modelo listo para escalar IA",
+      "comparison": {
+        "left_label": "Hoy",
+        "right_label": "Después de Minsait",
+        "left_items": [
+          "Tooling: cero estandarización en herramientas IA",
+          "Governance: sin políticas de uso ni red flags",
+          "Capacidad: 0% de colaboradores certificados en GenAI",
+          "Casos: 2-3 pilotos aislados sin escalar",
+          "Riesgo: privacidad SAP expuesta sin controles",
+          "Velocidad: reportes operación en 1 sem · análisis manual"
+        ],
+        "right_items": [
+          "Stack común: 3 productos auditados con compliance",
+          "Playbook por rol con guidelines + 24 casos validados",
+          "100% de capacitados certificados (500 personas) · 12 cohortes",
+          "24 casos en producción · expansión continua post-programa",
+          "Compliance integrado · SAP + IA con privacidad y auditoría",
+          "Reportes en minutos · análisis automatizado · time-to-insight 80% menos"
+        ]
+      },
+      "footnote": "Fuente: entrevistas Minsait con líderes Ferreyros · 2026 · McKinsey AI in Mining 2024"
+    },
+    {
+      "order": 7,
+      "layout_kind": "section_divider",
+      "title": "02 · Solución técnica propuesta"
+    },
+    {
+      "order": 8,
+      "antetitle": "02 · SOLUCIÓN",
+      "title": "3 productos · 24 casos de uso · 500 colaboradores certificados en 6 meses",
+      "bullets": [
+        "Stack auditado por Minsait: ChatGPT Enterprise (operaciones) + Copilot (oficina) + Claude API (SAP automation)",
+        "24 casos validados con sponsor Ferreyros: 8 Operaciones + 6 Mantto + 5 Comercial + 5 Administración",
+        "Modelo formativo: 500 colaboradores · 4 niveles (Awareness · Hands-on · Aplicación · Mastery) · 12 cohortes",
+        "Métricas de éxito medibles: SPI/CPI por proyecto, NPS de adopción mensual, casos productivos cerrados/mes"
+      ],
+      "key_metric": {
+        "value": "24",
+        "label": "Casos de uso validados con sponsor",
+        "context": "ROI promedio 3.2x en 12 meses"
+      }
+    },
+    {
+      "order": 9,
+      "antetitle": "02 · SOLUCIÓN",
+      "title": "Stack técnico recomendado · justificación por producto",
+      "table": {
+        "headers": ["Herramienta", "Caso principal", "Costo/mes", "Owner", "Diferenciador"],
+        "rows": [
+          ["ChatGPT Enterprise", "Reportes y análisis ops", "$60/usr", "Operaciones", "Agentes verticales por unidad"],
+          ["Microsoft Copilot", "Productividad oficina", "$30/usr", "IT", "Integración nativa Office365"],
+          ["Claude API", "Automation SAP", "$50/usr", "Datos", "Mejor reasoning para queries SAP"],
+          ["Azure AI Studio", "Gobierno IA", "Variable", "IT", "Compliance + auditoría empresarial"]
+        ]
+      }
+    },
+    {
+      "order": 10,
+      "layout_kind": "section_divider",
+      "title": "03 · Metodología y plan de trabajo"
+    },
+    {
+      "order": 11,
+      "antetitle": "03 · METODOLOGÍA",
+      "title": "Framework de 4 fases · 24 semanas total",
+      "process_steps": [
+        {"step": 1, "label": "Diagnóstico", "description": "4 sem · Mapa capacidades"},
+        {"step": 2, "label": "Diseño", "description": "6 sem · Programa formativo"},
+        {"step": 3, "label": "Pilotos", "description": "10 sem · 12 cohortes"},
+        {"step": 4, "label": "Adopción", "description": "4 sem · Total 24 sem"}
+      ]
+    },
+    {
+      "order": 12,
+      "antetitle": "03 · METODOLOGÍA",
+      "title": "Fase 1 · Diagnóstico (sem 1-4) — Mapa de capacidades por unidad",
+      "bullets": [
+        "Entrevistas con líderes operativos y de IT (15 stakeholders en 4 unidades)",
+        "Mapeo de procesos actuales y pain points en uso de SAP y reportes",
+        "Identificación de casos de uso priorizados con ROI estimado por caso",
+        "Definir baseline de productividad: time-to-report, downtime, NPS interno"
+      ],
+      "key_metric": {
+        "value": "4 sem",
+        "label": "Duración Fase 1",
+        "context": "Manager + 2 Cons · Partner 20%"
+      }
+    },
+    {
+      "order": 13,
+      "antetitle": "03 · METODOLOGÍA",
+      "title": "Fase 2 · Diseño (sem 5-10) — Programa formativo modular y stack auditado",
+      "bullets": [
+        "Currículo de 4 niveles: Awareness, Hands-on, Aplicación, Mastery",
+        "Material adaptado por unidad: Operaciones, Mantto, Comercial, Admin",
+        "Plataforma LMS configurada con 12 cohortes programadas",
+        "Validación de casos de uso priorizados con sponsor Ferreyros"
+      ],
+      "key_metric": {
+        "value": "6 sem",
+        "label": "Duración Fase 2",
+        "context": "Manager + 1 Cons + Diseño Pedagógico"
+      }
+    },
+    {
+      "order": 14,
+      "antetitle": "03 · METODOLOGÍA",
+      "title": "Fase 3 · Pilotos (sem 11-20) — 12 cohortes con casos reales del negocio",
+      "bullets": [
+        "Wave 1 (sem 11-13): Operaciones · 4 cohortes · downtime y mantto predictivo",
+        "Wave 2 (sem 14-16): Comercial + Admin · 4 cohortes · reportes y análisis SAP",
+        "Wave 3 (sem 17-19): Mantto técnico · 4 cohortes · automation de tickets",
+        "Sem 20: showcase de casos producidos · medición de adopción y ROI"
+      ],
+      "key_metric": {
+        "value": "10 sem",
+        "label": "Duración Fase 3",
+        "context": "PM + 4 Trainers · 100% dedicación"
+      }
+    },
+    {
+      "order": 15,
+      "antetitle": "03 · METODOLOGÍA",
+      "title": "Fase 4 · Adopción (sem 21-24) — Playbook y plan de sostenimiento",
+      "bullets": [
+        "Playbook por rol con 24 casos documentados, prompts validados y red flags",
+        "Tablero de adopción: % usuarios activos · casos en producción · ROI por caso",
+        "Comunidad interna 'Ferreyros AI' con showcase mensual y aceleración",
+        "Plan de sostenimiento Q3+Q4 con KPIs operativos (SPI, CPI, NPS)"
+      ],
+      "key_metric": {
+        "value": "4 sem",
+        "label": "Duración Fase 4",
+        "context": "Manager + 1 Adopter Lead"
+      }
+    },
+    {
+      "order": 16,
+      "layout_kind": "section_divider",
+      "title": "04 · Equipo Minsait"
+    },
+    {
+      "order": 17,
+      "antetitle": "04 · EQUIPO",
+      "title": "8 profesionales dedicados · 1 Partner + 2 Managers + 5 Consultores",
+      "table": {
+        "headers": ["Rol", "Perfil", "Dedicación", "Responsabilidad principal"],
+        "rows": [
+          ["Partner", "18a · Ex-Director PMO Antamina", "20%", "Sponsor + escalación + QA estratégico"],
+          ["Manager Sr", "12a · CSPO + IA en MMG Las Bambas", "60%", "Lidera programa · sync sponsor"],
+          ["Manager Pedag", "10a · L&D + IA en Yanacocha", "60%", "Diseño curricular y certificación"],
+          ["Cons Sr Datos", "8a · MLOps + SAP Hana", "100%", "Casos técnicos SAP + automation"],
+          ["Cons Sr Operaciones", "7a · Lean Mining + IA", "100%", "Casos operativos · downtime"],
+          ["Cons Jr (x3)", "3-5a · Trainers certificados", "100%", "Facilitación de 12 cohortes"]
+        ]
+      }
+    },
+    {
+      "order": 18,
+      "layout_kind": "section_divider",
+      "title": "05 · Inversión y condiciones"
+    },
+    {
+      "order": 19,
+      "antetitle": "05 · INVERSIÓN",
+      "title": "USD 460,000 · facturación por hito · 24 semanas",
+      "table": {
+        "headers": ["Concepto", "Honorarios", "% del total", "Hito de pago"],
+        "rows": [
+          ["Fase 1 · Diagnóstico", "USD 80,000", "17%", "Cierre mapa capacidades · sem 4"],
+          ["Fase 2 · Diseño", "USD 120,000", "26%", "Aprobación programa · sem 10"],
+          ["Fase 3 · Pilotos", "USD 200,000", "44%", "Cierre 12 cohortes · sem 20"],
+          ["Fase 4 · Adopción", "USD 60,000", "13%", "Entrega playbook · sem 24"],
+          ["TOTAL", "USD 460,000", "100%", "—"]
+        ]
+      },
+      "footnote": "Vigencia 30 días · IGV 18% no incluido · Gastos de viaje y licencias de software no incluidas · Pago a 30 días del hito · Cancelación con 15 días de anticipación"
+    },
+    {
+      "order": 20,
+      "layout_kind": "closing",
+      "title": "Gracias",
+      "quote": {
+        "text": "La IA no reemplaza a tus operaciones — las amplifica. En 24 semanas Ferreyros tendrá 500 colaboradores certificados y 24 casos productivos.",
+        "attribution": "Minsait Business Consulting · Práctica IA Generativa"
+      }
+    }
+  ]
+}
